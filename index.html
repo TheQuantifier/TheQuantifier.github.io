@@ -1,1 +1,151 @@
-<a href = "itis3135/">Click to go to ITIS3135 Site</a> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Iohannes Manus | Personal Home Page</title>
+
+  <!-- Required Accumulus Script -->
+  <script src="https://lint.page/kit/4d0fe3.js" crossorigin="anonymous"></script>
+
+  <!-- Embedded CSS (required) -->
+  <style>
+    :root {
+      --bg: #f7f7fb;
+      --ink: #1f2937;
+      --accent: #2f6df6;
+      --muted: #6b7280;
+      --card: #ffffff;
+      --ring: rgba(47, 109, 246, 0.35);
+      --maxw: 900px;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0 auto;
+      max-width: var(--maxw);
+      width: 92%;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    header, main, footer {
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      padding: 1.25rem;
+      margin: 1.1rem 0;
+    }
+
+    h1 {
+      margin: 0 0 0.25rem 0;
+      font-size: clamp(1.6rem, 3vw, 2rem);
+      font-weight: 800;
+    }
+
+    .tagline {
+      margin: 0.15rem 0 0;
+      color: var(--muted);
+      font-size: 0.975rem;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: clamp(1.25rem, 2.2vw, 1.5rem);
+      font-weight: 700;
+    }
+
+    p { margin: 0 0 0.8rem; }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover { text-decoration: underline; }
+    a:focus-visible {
+      outline: 3px solid var(--ring);
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+
+    .footer-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 0.9rem;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+    }
+
+    .sep { color: var(--muted); }
+
+    .validators {
+      display: flex;
+      gap: 0.9rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+    }
+
+    .smallprint {
+      margin-top: 0.75rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Iohannes Manus</h1>
+    <p class="tagline">Mathematics major • Builder of clean, human-centered web experiences</p>
+  </header>
+
+  <main>
+    <h2>Personal Home Page</h2>
+
+    <p>
+      Welcome—this is my professional landing page. You can use the links below to reach my
+      course work, public profiles, and hosted sites. I keep this page simple and distinct from
+      specific class assignments so it remains an at-a-glance hub.
+    </p>
+
+    <p>
+      I study mathematics at UNC Charlotte and enjoy applying structured thinking to real projects:
+      from front-end web design and accessibility to game-development prototypes. I value readable
+      code, thoughtful interfaces, and clear documentation.
+    </p>
+  </main>
+
+  <footer>
+    <nav class="footer-nav" aria-label="Primary site links">
+      <a href="https://github.com/TheQuantifier" target="_blank" rel="noopener">GitHub.com</a>
+      <span class="sep">|</span>
+      <a href="https://webpages.charlotte.edu/jhand12/" target="_blank" rel="noopener">CLT Web</a>
+      <span class="sep">|</span>
+      <a href="https://thequantifier.github.io/" target="_blank" rel="noopener">GitHub.io</a>
+      <span class="sep">|</span>
+      <a href="itis3135/">ITIS3135</a>
+      <span class="sep">|</span>
+      <a href="https://www.linkedin.com/in/johnahand" target="_blank" rel="noopener">LinkedIn</a>
+    </nav>
+
+    <div class="validators">
+      <a href="https://validator.w3.org/nu/" target="_blank" rel="noopener">HTML Validator (W3C)</a>
+      <span class="sep">•</span>
+      <a href="https://jigsaw.w3.org/css-validator/" target="_blank" rel="noopener">CSS Validator (W3C Jigsaw)</a>
+    </div>
+
+    <p class="smallprint">© <span id="year"></span> Iohannes Manus. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
