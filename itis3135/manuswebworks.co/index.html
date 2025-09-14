@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Accumulus (required) -->
+  <script src="https://lint.page/kit/4d0fe3.js" crossorigin="anonymous"></script>
+  <!-- Site CSS -->
+  <title>Manus Webworks – Design & Development</title>
+
+  <!-- Color palette generated with Coolors:
+       https://coolors.co/0b132b-1c2541-3a506b-5bc0be-6fffe9
+       Primary dark: #0B132B
+       Deep blue:    #1C2541
+       Slate blue:   #3A506B
+       Teal:         #5BC0BE
+       Mint:         #6FFFE9
+  -->
+  <style>
+    :root {
+      --ink-900: #0b132b;
+      --ink-800: #1c2541;
+      --ink-600: #3a506b;
+      --mint-400: #6fffe9;
+      --teal-400: #5bc0be;
+      --paper: #f7f7f7;
+      --paper-2: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.55;
+      color: var(--ink-900);
+      background: var(--paper);
+    }
+    a { color: var(--teal-400); text-underline-offset: 0.2em; }
+    a:hover { color: var(--mint-400); }
+    img { display: block; }
+
+    /* ---------------- Header ---------------- */
+    header {
+      background: var(--ink-900);
+      color: white;
+      padding: 1.25rem 1rem;
+      border-bottom: 4px solid var(--teal-400);
+    }
+    .brand {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+    }
+    .brand-item { margin-bottom: 0.75rem; }
+    .brand .brand-item { margin-right: 1rem; }
+    .brand-title {
+      margin: 0;
+      font-size: clamp(1.4rem, 2.2vw + 1rem, 2.2rem);
+      letter-spacing: 0.5px;
+    }
+    .tagline {
+      grid-column: 1 / -1;
+      margin: 0;
+      margin-right: 0; /* override header spacing */
+      font-size: 1rem;
+      color: #e8f8f6;
+      opacity: 0.9;
+    }
+
+    /* ---------------- Main ---------------- */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem;
+    }
+    h2 { color: var(--ink-800); margin-top: 0; }
+
+    .hero {
+      background: linear-gradient(135deg, var(--paper-2), #eefaf9);
+      border: 1px solid #e6eef0;
+      border-radius: 14px;
+      padding: 1.25rem 1.25rem 0.75rem;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    .grid-item { margin-bottom: 1.25rem; }
+
+    @media screen and (min-width: 820px) {
+      .grid { grid-template-columns: 2fr 1fr; }
+      .grid-item {
+        margin-bottom: 0;
+        margin-right: 1.25rem;
+      }
+      .grid-item:last-child {
+        margin-right: 0; /* avoid extra space after last column */
+      }
+    }
+
+    ul {
+      padding-left: 1.2rem;
+      margin: 0.2rem 0 1.2rem;
+      list-style-position: outside;
+    }
+    ul li { padding-left: 0.25rem; }
+    ul li::marker {
+      content: "\\25B9 ";  /* Unicode U+25B9: small right-pointing triangle */
+      color: var(--teal-400);
+      font-weight: 700;
+    }
+
+    .panel {
+      background: var(--paper-2);
+      border: 1px solid #e6eef0;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+
+    .cta {
+      display: inline-block;
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      border: 2px solid var(--teal-400);
+      color: var(--ink-900);
+      background: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .cta:hover { background: var(--mint-400); color: #0a0d1a; border-color: var(--mint-400); }
+
+    address {
+      font-style: normal;
+      background: #ffffff;
+      border-left: 4px solid var(--teal-400);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+
+    /* ---------------- Footer ---------------- */
+    footer {
+      background: var(--paper-2);
+      border-top: 1px solid #e6eef0;
+      padding: 1rem;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-inner > * { margin: 0.75rem 1.25rem 0 0; }
+
+    .foot-menu {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .foot-menu a { margin-right: 1rem; }
+    .foot-menu a:last-child { margin-right: 0; }
+
+    .val-links { opacity: 0.9; font-size: 0.95rem; }
+
+    /* ---------------- A11y ---------------- */
+    .skip-link {
+      position: absolute; left: -999px; top: auto;
+    }
+    .skip-link:focus {
+      left: 1rem; top: 1rem; background: #fff; color: #000; padding: 0.5rem 0.75rem; border-radius: 8px; outline: 3px solid var(--mint-400);
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header>
+    <div class="brand">
+      <img class="brand-item" src="images/manus-logo.png" alt="Manus Webworks geometric M logo" width="64" height="64" />
+      <h1 class="brand-title brand-item">Manus Webworks</h1>
+      <p class="tagline brand-item">Simple, performant, accessible sites for people and their ideas.</p>
+    </div>
+  </header>
+
+  <main id="main" class="grid">
+    <section class="hero panel grid-item">
+      <h2>Manus Webworks Services</h2>
+      <p>
+        Manus Webworks is a boutique design & development studio led by John Hand. We build lightweight,
+        standards-based websites that are fast, responsive, and easy to maintain. From idea to launch, we
+        focus on clarity, clean code, and timeless design.
+      </p>
+      <ul>
+        <li>Custom web design with semantic HTML and modern CSS.</li>
+        <li>Accessible, WCAG-minded components and patterns.</li>
+        <li>Performance first: speedy builds, optimized assets, clean markup.</li>
+        <li>Responsive layouts that look great on any device.</li>
+        <li>GitHub Pages & university hosting deployment workflows.</li>
+        <li>Nu HTML Checker & CSS validation as part of handoff.</li>
+        <li>Search-friendly structure and clear content hierarchy.</li>
+        <li>Friendly docs so you can update your own site.</li>
+      </ul>
+      <p>
+        Looking to launch something polished and practical? Let’s make it real. Tell us about your project
+        and we’ll propose a simple plan with milestones and a clear timeline.
+      </p>
+      <p><a class="cta" href="#contact">Start a project</a></p>
+    </section>
+
+    <aside class="panel grid-item" aria-labelledby="contact">
+      <h2 id="contact">Contact</h2>
+      <address>
+        Email: <a href="mailto:hello@manuswebworks.co">hello@manuswebworks.co</a><br />
+        Phone: <a href="tel:+1-980-555-0173">(980) 555-0173</a><br />
+        Address: 2100 Foundry Lane, Suite 120, Charlotte, NC 28223
+      </address>
+      <p>
+        Also visit our whimsical company, <a href="../jolly-hound/index.html">Jolly Hound</a>, for our pet-themed demo site.
+      </p>
+    </aside>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <nav class="foot-menu" aria-label="Footer">
+        <a href="#main">Home</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="val-links">
+        <a href="https://validator.w3.org/nu/" rel="noopener" target="_blank">HTML Validator</a>
+        ·
+        <a href="https://jigsaw.w3.org/css-validator/" rel="noopener" target="_blank">CSS Validator</a>
+        ·
+        <a href="https://webaim.org/resources/contrastchecker/" rel="noopener" target="_blank">Contrast Checker</a>
+      </div>
+      <div>
+        <span aria-hidden="true">©</span> <time id="year">2025</time> Manus Webworks · "Build light. Build right."
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
