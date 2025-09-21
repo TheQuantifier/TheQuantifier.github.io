@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Accumulus (required) -->
+  <script src="https://lint.page/kit/4d0fe3.js" crossorigin="anonymous"></script>
+  <title>Jolly Hound – Home</title>
+  <link rel="stylesheet" href="styles/jolly.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="brand">Jolly Hound</h1>
+      <nav class="main-nav" aria-label="Primary">
+        <ul>
+          <li><a href="index.html" aria-current="page">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <!-- You’ll also add a link to this site from your COURSE site nav (see notes below). -->
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Jolly Hound</h2>
+
+    <p><strong>Jolly Hound</strong> is a whimsical micro-kiosk that turns short messages into tiny
+      “howl capsules.” Each capsule includes a bone-shaped keepsake with a QR linking to your custom audio
+      howl-greeting, a playful “wag” animation, and an optional scratch-n-sniff sticker to seal the moment.</p>
+
+    <p>Think of us as <em>joy on demand</em>, packaged like a pup’s best day: bright, bouncy, and a little
+      ridiculous—in the best way. Perfect for birthdays, congrats, “miss you,” apology howls, and just-because barks.</p>
+
+    <section aria-labelledby="offerings">
+      <h3 id="offerings">What we “sell”</h3>
+      <ul class="grid">
+        <li>
+          <h4>HowlGrams</h4>
+          <p>Personalized audio howls (you or us!) delivered by QR in a bone capsule.</p>
+        </li>
+        <li>
+          <h4>WagTags</h4>
+          <p>Reusable NFC/QR tags for lockers, gift bags, and keychains—swap in new howls anytime.</p>
+        </li>
+        <li>
+          <h4>SniffStickers</h4>
+          <p>Scratch-n-sniff seals (vanilla biscuit, fresh grass, rain-day walk).</p>
+        </li>
+        <li>
+          <h4>Pup-Post</h4>
+          <p>Mini gift wrap + ribbon sets sized for our capsules.</p>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="tagline">"Give them something to howl about!"</p>
+      <p class="smallprint">© <span id="year"></span> Jolly Hound.</p>
+    </div>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </footer>
+</body>
+</html>
