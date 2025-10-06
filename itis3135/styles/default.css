@@ -59,3 +59,76 @@ a:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; border-ra
 .sep { color: var(--muted); }
 .built-by, .copyright { text-align: center; color: var(--muted); margin: 0.4rem 0 0; }
 .signature { margin-top: 1rem; }
+
+/* ---------- Add-on styles for FCC outline ---------- */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  padding: 0.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+  background: var(--card);
+}
+
+caption {
+  text-align: left;
+  font-weight: 800;
+  padding: 0.5rem 0.5rem 0.25rem;
+}
+
+thead th {
+  background: #f2f5f9;
+  font-weight: 700;
+  text-align: left;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+th, td {
+  padding: 0.7rem 0.6rem;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+tbody tr:hover {
+  background: #f9fbff;
+}
+
+td:first-child { width: 32%; }
+td:nth-child(2) { width: 12%; white-space: nowrap; }
+td:nth-child(3) { width: 56%; }
+
+.steps {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.muted-note {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-top: 0.4rem;
+}
+
+@media (min-width: 760px) {
+  .schedule-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.schedule .card {
+  background: var(--card);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.small { font-size: 0.95rem; }
+
+/* Optional: highlight current nav link when aria-current is present */
+[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
