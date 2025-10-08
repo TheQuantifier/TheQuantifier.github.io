@@ -3,153 +3,71 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>John Hand | Personal Home Page</title>
+  <title>The Quantifier – Home</title>
 
-  <!-- Required Accumulus Script -->
-  <script src="https://lint.page/kit/4d0fe3.js" crossorigin="anonymous"></script>
+  <!-- Meta tags -->
+  <meta name="description" content="The personal site of The Quantifier — mathematician, creator, and developer." />
+  <meta name="author" content="John Hand" />
 
-  <!-- Embedded CSS (required) -->
-  <style>
-    :root {
-      --bg: #f7f7fb;
-      --ink: #1f2937;
-      --accent: #2f6df6;
-      --muted: #6b7280;
-      --card: #ffffff;
-      --ring: rgba(47, 109, 246, 0.35);
-      --maxw: 900px;
-    }
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/favicon.png" />
 
-    html, body {
-      height: 100%;
-    }
-
-    body {
-      margin: 0 auto;
-      max-width: var(--maxw);
-      width: 92%;
-      background: var(--bg);
-      color: var(--ink);
-      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-    }
-
-    header, main, footer {
-      background: var(--card);
-      border-radius: 14px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      padding: 1.25rem;
-      margin: 1.1rem 0;
-    }
-
-    h1 {
-      margin: 0 0 0.25rem 0;
-      font-size: clamp(1.6rem, 3vw, 2rem);
-      font-weight: 800;
-    }
-
-    .tagline {
-      margin: 0.15rem 0 0;
-      color: var(--muted);
-      font-size: 0.975rem;
-    }
-
-    h2 {
-      margin-top: 0;
-      font-size: clamp(1.25rem, 2.2vw, 1.5rem);
-      font-weight: 700;
-    }
-
-    p { margin: 0 0 0.8rem; }
-
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    a:hover { text-decoration: underline; }
-    a:focus-visible {
-      outline: 3px solid var(--ring);
-      outline-offset: 2px;
-      border-radius: 6px;
-    }
-
-    .footer-nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 0.9rem;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 0.6rem;
-      font-weight: 600;
-    }
-
-    .sep { color: var(--muted); }
-
-    .validators {
-      display: flex;
-      gap: 0.9rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      font-size: 0.95rem;
-    }
-
-    .smallprint {
-      margin-top: 0.75rem;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-  </style>
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/default.css" />
 </head>
 <body>
+  <!-- ==================== HEADER ==================== -->
   <header>
-    <h1>John Hand</h1>
-    <p class="tagline">UNC Charlotte Mathematics major • Interactive Programming minor </p>
+    <div class="container">
+      <h1 class="site-title">The Quantifier</h1>
+      <p class="tagline">Math • Code • Thought</p>
+      <nav aria-label="Main Navigation">
+        <ul class="nav">
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="blog.html">Blog</a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
 
-  <main>
-    <h2>Personal Home Page</h2>
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="container">
+    <section class="hero">
+      <h2>Welcome to The Quantifier</h2>
+      <p>
+        Exploring the intersection of logic, creativity, and design.  
+        Here you'll find posts about mathematics, technology, and the occasional philosophical musing.
+      </p>
+      <a href="blog.html" class="button">Visit the Blog</a>
+    </section>
 
-    <p>
-      Welcome—this is my professional landing page. You can use the links below to reach my
-      course work, public profiles, and hosted sites. I keep this page simple and distinct from
-      specific class assignments so it remains an at-a-glance hub.
-    </p>
-
-    <p>
-      I’m a mathematics major at UNC Charlotte who enjoys solving problems both inside and outside
-      the classroom. I like working on web design projects, building game prototypes, and finding
-      creative ways to connect technology with everyday life. Beyond coding, I enjoy hiking, swimming,
-      and exploring new ideas through conversation.
-    </p>
+    <section class="highlights">
+      <div class="card">
+        <h3>Mathematics</h3>
+        <p>Elegant reasoning, proofs, and insights from advanced problem solving to applied math.</p>
+      </div>
+      <div class="card">
+        <h3>Programming</h3>
+        <p>Projects in Java, Python, and Godot — building systems that bridge logic and imagination.</p>
+      </div>
+      <div class="card">
+        <h3>Thoughts</h3>
+        <p>Occasional reflections on learning, creativity, and life as a thinker in a digital world.</p>
+      </div>
+    </section>
   </main>
 
+  <!-- ==================== FOOTER ==================== -->
   <footer>
-    <nav class="footer-nav" aria-label="Primary site links">
-      <a href="https://github.com/TheQuantifier" target="_blank" rel="noopener">GitHub.com</a>
-      <span class="sep">|</span>
-      <a href="https://webpages.charlotte.edu/jhand12/" target="_blank" rel="noopener">CLT Web</a>
-      <span class="sep">|</span>
-      <a href="https://thequantifier.github.io/" target="_blank" rel="noopener">GitHub.io</a>
-      <span class="sep">|</span>
-      <a href="itis3135/">ITIS3135</a>
-      <span class="sep">|</span>
-      <a href="https://www.linkedin.com/in/johnahand" target="_blank" rel="noopener">LinkedIn</a>
-    </nav>
-
-    <div class="validators">
-      <a href="https://validator.w3.org/nu/" target="_blank" rel="noopener">HTML Validator (W3C)</a>
-      <span class="sep">•</span>
-      <a href="https://jigsaw.w3.org/css-validator/" target="_blank" rel="noopener">CSS Validator (W3C Jigsaw)</a>
+    <div class="container footer-content">
+      <p>&copy; <span id="year"></span> The Quantifier. All rights reserved.</p>
+      <p class="credit">Site by <strong>Manus Webworks</strong></p>
     </div>
-
-    <p class="smallprint">
-    © <span id="year"></span> 
-    <a href="itis3135/manuswebworks.co/index.html">Manus Webworks</a>. 
-  All rights reserved.
-    </p>
   </footer>
 
   <script>
+    // auto-update copyright year
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
