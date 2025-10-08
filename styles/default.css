@@ -24,34 +24,52 @@ body {
   padding: 1.5rem 0;
 }
 
-/* ========== HEADER ========== */
-header {
+/* ========== THIN FULL-WIDTH HEADER ========== */
+.thin-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
   background: #121213;
   border-bottom: 1px solid #2c2c2f;
-  text-align: center;
-  padding: 2rem 0 1.5rem;
+  z-index: 100;
+}
+
+/* inner header bar stays centered while background spans full width */
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
 }
 
 .site-title {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: #fff;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .tagline {
+  font-size: 0.9rem;
   color: #a1a1aa;
   font-style: italic;
-  margin-top: 0.3rem;
 }
 
 /* Navigation */
 .nav {
   list-style: none;
-  margin-top: 1.2rem;
   display: flex;
-  justify-content: center;
-  gap: 1.8rem;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
 }
 
 .nav a {
@@ -59,11 +77,31 @@ header {
   color: #c9c9d1;
   transition: color 0.3s ease;
   font-weight: 500;
+  font-size: 0.95rem;
 }
 
 .nav a:hover,
 .nav a.active {
   color: #7dd3fc;
+}
+
+/* Responsive header */
+@media (max-width: 600px) {
+  .header-bar {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .nav {
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .site-title {
+    font-size: 1.1rem;
+  }
 }
 
 /* ========== MAIN ========== */
@@ -149,11 +187,6 @@ footer {
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 600px) {
-  .nav {
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-
   .hero h2 {
     font-size: 1.6rem;
   }
