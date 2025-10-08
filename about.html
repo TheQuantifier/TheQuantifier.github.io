@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About – The Quantifier</title>
+
+  <meta name="description" content="Learn more about The Quantifier — a mathematician, developer, and creative thinker exploring the intersections of logic, design, and imagination." />
+  <meta name="author" content="John Hand" />
+
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <link rel="stylesheet" href="styles/default.css" />
+</head>
+<body>
+  <!-- ==================== HEADER ==================== -->
+  <header>
+    <div class="container">
+      <h1 class="site-title">The Quantifier</h1>
+      <p class="tagline">Math • Code • Thought</p>
+      <nav aria-label="Main Navigation">
+        <ul class="nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html" class="active">About</a></li>
+          <li><a href="blog.html">Blog</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== BANNER ==================== -->
+  <section class="banner">
+    <img src="images/about-banner.jpg" alt="Abstract geometric banner" />
+    <div class="banner-overlay">
+      <h2>About The Quantifier</h2>
+      <p>Where logic meets imagination.</p>
+    </div>
+  </section>
+
+  <!-- ==================== MAIN ==================== -->
+  <main class="container about-page">
+    <section class="profile">
+      <div class="profile-photo">
+        <img src="images/profile.jpg" alt="Portrait of The Quantifier" />
+      </div>
+      <div class="profile-text">
+        <h2>Hello, I’m <span class="highlight">John Hand</span></h2>
+        <p>
+          I’m a mathematics major, programmer, and creative mind who enjoys blending analytical reasoning with art and storytelling. 
+          Whether it’s solving an elegant proof, designing a new RPG system, or exploring philosophy over coffee, I’m always quantifying the world around me.
+        </p>
+        <p>
+          This site — <strong>The Quantifier</strong> — is my home on the web. 
+          It’s where I share thoughts, experiments, and projects that connect logic and creativity.
+        </p>
+
+        <div class="social-icons">
+          <a href="https://github.com/TheQuantifier" target="_blank" title="GitHub">
+            <img src="images/icon_github.svg" alt="GitHub Icon" />
+          </a>
+          <a href="https://www.youtube.com/@TheQuantifier" target="_blank" title="YouTube">
+            <img src="images/icon_youtube.svg" alt="YouTube Icon" />
+          </a>
+          <a href="mailto:john@handfam.org" title="Email">
+            <img src="images/icon_email.svg" alt="Email Icon" />
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-details">
+      <h3>What I Do</h3>
+      <p>
+        I create, teach, and explore. My work spans mathematics, software development, and digital design — with a focus on clarity, structure, and storytelling.
+        I’m currently developing an RPG game in Godot Engine, studying advanced math topics like differential equations and topology, and managing creative projects under <strong>Manus Webworks</strong>.
+      </p>
+
+      <h3>Beyond the Screen</h3>
+      <p>
+        Outside of academics and coding, I enjoy hiking, swimming, and exploring philosophical questions about meaning and discovery. 
+        I also love working with my community — whether it’s helping students as a tutor or leading campus events as part of UNCC’s Honors and Residence Life programs.
+      </p>
+    </section>
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer>
+    <div class="container footer-content">
+      <p>&copy; <span id="year"></span> The Quantifier. All rights reserved.</p>
+      <p class="credit">Site by <strong>Manus Webworks</strong></p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
