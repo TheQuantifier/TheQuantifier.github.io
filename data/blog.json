@@ -1,0 +1,20 @@
+{
+  "posts": [
+    {
+      "id": "post-001",
+      "date": "2025-10-03",
+      "displayDate": "Oct 3, 2025",
+      "title": "Building My First PC",
+        "message": "After years of using a MacBook, I finally decided to build my own desktop PC from scratch — and it turned out amazing. I spent weeks researching parts, comparing prices, and learning about compatibility. The result? A powerful, efficient, and beautifully lit system that runs everything from game development to streaming with ease.<br><br>Here’s the full build on PCPartPicker:<br><a href='https://pcpartpicker.com/b/YWcbt6' target='_blank' rel='noopener'>https://pcpartpicker.com/b/YWcbt6</a><br><br>This build features an AMD Ryzen 7 7700X processor, Gigabyte B650 Gaming X AX V2 motherboard, G.Skill Flare X5 DDR5-6000 RAM, Peerless Assassin 120 SE cooler, and a Samsung 990 EVO Plus 1TB SSD — all wrapped up in a sleek Montech case. The experience of putting it together was both challenging and rewarding, and seeing it power on for the first time was one of the best feelings ever.",
+      "images": ["setup.jpg", "inside.jpg"]
+    },
+    {
+      "id": "post-002",
+      "date": "2025-10-07",
+      "displayDate": "Oct 7, 2025",
+      "title": "Setting Up My Own Domain and Connecting It to GitHub",
+      "message": "Today I officially set up my very own domain — <strong>thequantifier.com</strong> — and connected it to my GitHub Pages site. It’s something I’ve wanted to do for a while: having a clean, personal domain that links everything I create, from code to writing.<br><br>I registered the domain through <a href='https://www.squarespace.com' target='_blank' rel='noopener'>Squarespace</a>, which made the process simple and secure. After verifying ownership, I configured the DNS settings to point to GitHub’s servers and linked it directly to my repository. Within minutes, my site was live under its new name.<br><br>Now, I can host all my projects, portfolios, and experiments in one place — cleanly under my own banner. It feels awesome seeing <em>thequantifier.com</em> load up with my work. This marks the beginning of an even bigger personal web presence.<br><br>For anyone else setting this up: make sure your repository includes a <code>CNAME</code> file with your custom domain name (e.g., <code>thequantifier.com</code>) and double-check your DNS records for <code>A</code> and <code>AAAA</code> entries pointing to GitHub’s IPs. It’s worth the effort!",
+      "images": ["domain-setup.png", "github-connection.png"]
+    }
+  ]
+}
