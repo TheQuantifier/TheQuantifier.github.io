@@ -5,13 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Blog – The Quantifier</title>
 
-  <meta name="description" content="The Quantifier blog — math, code, and thoughts." />
+  <meta name="description" content="The Quantifier Blog — exploring mathematics, programming, and gaming." />
   <meta name="author" content="John Hand" />
 
   <link rel="icon" type="image/png" href="images/favicon.png" />
   <link rel="stylesheet" href="styles/default.css" />
   <link rel="stylesheet" href="styles/blog.css" />
 </head>
+<script>
+  (function () {
+    const DURATION = 100; // keep in sync with --fade-duration
+
+    // Mark page as ready (fade in)
+    function ready() {
+      // In case we returned from bfcache, remove fading state
+      document.body.classList.remove('is-fading');
+      document.body.classList.add('is-ready');
+    }
+
+    // On normal load & bfcache restore
+    window.addEventListener('DOMContentLoaded', ready);
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) ready();
+    });
+
+    // Only intercept safe, same-tab, same-origin links
+    function shouldIntercept(a) {
+      if (!a) return false;
+      const url = new URL(a.href, location.href);
+      if (url.origin !== location.origin) return false;    // external
+      if (a.target && a.target !== '_self') return false;  // new tab/window
+      if (a.hasAttribute('download')) return false;        // download
+      if (a.getAttribute('href')?.startsWith('#')) return false; // in-page
+      return true;
+    }
+
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a');
+      if (!shouldIntercept(a)) return;
+
+      // Respect reduced motion
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      e.preventDefault();
+      if (!prefersReduced) {
+        document.body.classList.add('is-fading');
+        setTimeout(() => (location.href = a.href), DURATION);
+      } else {
+        location.href = a.href;
+      }
+    });
+  })();
+</script>
 <body>
   <!-- ==================== HEADER ==================== -->
   <header class="thin-header">
@@ -23,19 +68,28 @@
 
       <nav aria-label="Main Navigation">
         <ul class="nav">
-          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="index.html">Home</a></li>
           <li><a href="about.html">About</a></li>
-          <li><a href="blog.html">Blog</a></li>
+          <li><a href="blog.html" class="active">Blog</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
+  <!-- ==================== BANNER ==================== -->
+  <section class="banner">
+    <img src="images/blog-banner.jpg" alt="Abstract geometric banner for The Quantifier Blog" />
+    <div class="banner-overlay">
+      <h2>The Quantifier Blog</h2>
+      <p>Exploring mathematics, programming, and gaming — where logic meets creativity.</p>
+    </div>
+  </section>
+
   <!-- ==================== MAIN ==================== -->
   <main class="container">
     <section class="hero">
-      <h2>Blog</h2>
-      <p>Notes on mathematics, programming projects, and occasional philosophy.</p>
+      <h2>Latest Posts</h2>
+      <p>Notes on mathematics, Godot development, and gaming — from theory to creation.</p>
     </section>
 
     <!-- Controls -->
@@ -49,7 +103,7 @@
 
     <!-- Posts -->
     <section id="blog" class="blog-grid" aria-live="polite" aria-busy="true">
-      <!-- Cards injected here -->
+      <!-- Blog posts will load here dynamically -->
     </section>
 
     <!-- Load more -->
@@ -57,6 +111,7 @@
       <button id="load-more" class="button" type="button">Load more</button>
     </div>
 
+    <!-- Error -->
     <div id="blog-error" class="blog-error" hidden>
       <p>Couldn’t load posts. Please refresh.</p>
     </div>
@@ -70,10 +125,9 @@
     </div>
   </footer>
 
+  <!-- ==================== SCRIPTS ==================== -->
   <script>
-    // -------- Utilities --------
     const PAGE_SIZE = 6;
-
     const $ = (sel) => document.querySelector(sel);
 
     function nl2br(str) {
@@ -89,8 +143,6 @@
       }
     }
 
-    // Images: centered/no distortion (CSS handles sizing)
-    // + click-to-enlarge via lightbox
     function renderImages(images) {
       if (!Array.isArray(images) || images.length === 0) return "";
       return `
@@ -110,8 +162,8 @@
     }
 
     function renderPost(post) {
-      const title = (post.title || "Untitled");
-      const messageHTML = nl2br(post.message); // supports <a> and <br> from JSON
+      const title = post.title || "Untitled";
+      const messageHTML = nl2br(post.message);
       const dateShown = post.displayDate || formatDate(post.date);
 
       return `
@@ -137,22 +189,16 @@
           <img src="${src}" alt="">
         </div>
       `;
-      // Close on click anywhere
-      overlay.addEventListener("click", () => {
-        if (document.body.contains(overlay)) document.body.removeChild(overlay);
-      });
-      // Close on Escape key
-      const onKey = (e) => {
-        if (e.key === "Escape") {
-          if (document.body.contains(overlay)) document.body.removeChild(overlay);
-          document.removeEventListener("keydown", onKey);
+      overlay.addEventListener("click", () => document.body.removeChild(overlay));
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && document.body.contains(overlay)) {
+          document.body.removeChild(overlay);
         }
-      };
-      document.addEventListener("keydown", onKey);
+      });
       document.body.appendChild(overlay);
     }
 
-    // -------- App State --------
+    // -------- Blog Logic --------
     let allPosts = [];
     let filtered = [];
     let shownCount = 0;
@@ -169,11 +215,7 @@
       const slice = filtered.slice(shownCount, shownCount + PAGE_SIZE);
       blogEl.insertAdjacentHTML("beforeend", slice.map(renderPost).join(""));
       shownCount += slice.length;
-
-      // Hide or show Load More
       $("#load-more").style.display = (shownCount >= filtered.length) ? "none" : "inline-block";
-
-      // Accessibility nicety
       blogEl.setAttribute("aria-busy", "false");
       updateResultsCount();
     }
@@ -186,26 +228,18 @@
 
     function applyFilter(query) {
       const q = (query || "").trim().toLowerCase();
-      if (!q) {
-        filtered = [...allPosts];
-      } else {
-        filtered = allPosts.filter(p => (p.title || "").toLowerCase().includes(q));
-      }
+      filtered = !q ? [...allPosts] : allPosts.filter(p => (p.title || "").toLowerCase().includes(q));
       resetAndRender();
     }
 
     async function loadBlog() {
       const errorEl = $("#blog-error");
-
       try {
         const res = await fetch("data/blog.json", { cache: "no-store" });
         if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
-
         allPosts = Array.isArray(data.posts) ? data.posts : [];
-        // Sort latest-first by ISO date (fallback to 0 if invalid)
-        allPosts.sort((a, b) => (new Date(b.date || 0)) - (new Date(a.date || 0)));
-
+        allPosts.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
         filtered = [...allPosts];
         resetAndRender();
       } catch (e) {
@@ -214,11 +248,8 @@
       }
     }
 
-    // -------- Events --------
     document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById('year').textContent = new Date().getFullYear();
-
-      // Search (with small debounce)
+      $("#year").textContent = new Date().getFullYear();
       const searchInput = $("#blog-search");
       let t = null;
       searchInput.addEventListener("input", () => {
@@ -226,13 +257,10 @@
         $("#blog").setAttribute("aria-busy", "true");
         t = setTimeout(() => applyFilter(searchInput.value), 180);
       });
-
-      // Load more
       $("#load-more").addEventListener("click", () => {
         $("#blog").setAttribute("aria-busy", "true");
         renderNextPage();
       });
-
       loadBlog();
     });
   </script>

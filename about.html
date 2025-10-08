@@ -12,6 +12,51 @@
   <link rel="stylesheet" href="styles/default.css" />
   <link rel="stylesheet" href="styles/about.css" />
 </head>
+<script>
+  (function () {
+    const DURATION = 100; // keep in sync with --fade-duration
+
+    // Mark page as ready (fade in)
+    function ready() {
+      // In case we returned from bfcache, remove fading state
+      document.body.classList.remove('is-fading');
+      document.body.classList.add('is-ready');
+    }
+
+    // On normal load & bfcache restore
+    window.addEventListener('DOMContentLoaded', ready);
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) ready();
+    });
+
+    // Only intercept safe, same-tab, same-origin links
+    function shouldIntercept(a) {
+      if (!a) return false;
+      const url = new URL(a.href, location.href);
+      if (url.origin !== location.origin) return false;    // external
+      if (a.target && a.target !== '_self') return false;  // new tab/window
+      if (a.hasAttribute('download')) return false;        // download
+      if (a.getAttribute('href')?.startsWith('#')) return false; // in-page
+      return true;
+    }
+
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a');
+      if (!shouldIntercept(a)) return;
+
+      // Respect reduced motion
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      e.preventDefault();
+      if (!prefersReduced) {
+        document.body.classList.add('is-fading');
+        setTimeout(() => (location.href = a.href), DURATION);
+      } else {
+        location.href = a.href;
+      }
+    });
+  })();
+</script>
 <body>
   <!-- ==================== HEADER ==================== -->
   <header class="thin-header">
@@ -23,8 +68,8 @@
 
       <nav aria-label="Main Navigation">
         <ul class="nav">
-          <li><a href="index.html" class="active">Home</a></li>
-          <li><a href="about.html">About</a></li>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html"  class="active">About</a></li>
           <li><a href="blog.html">Blog</a></li>
         </ul>
       </nav>

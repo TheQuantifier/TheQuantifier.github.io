@@ -15,6 +15,51 @@
   <!-- Styles -->
   <link rel="stylesheet" href="styles/default.css" />
 </head>
+<script>
+  (function () {
+    const DURATION = 100; // keep in sync with --fade-duration
+
+    // Mark page as ready (fade in)
+    function ready() {
+      // In case we returned from bfcache, remove fading state
+      document.body.classList.remove('is-fading');
+      document.body.classList.add('is-ready');
+    }
+
+    // On normal load & bfcache restore
+    window.addEventListener('DOMContentLoaded', ready);
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) ready();
+    });
+
+    // Only intercept safe, same-tab, same-origin links
+    function shouldIntercept(a) {
+      if (!a) return false;
+      const url = new URL(a.href, location.href);
+      if (url.origin !== location.origin) return false;    // external
+      if (a.target && a.target !== '_self') return false;  // new tab/window
+      if (a.hasAttribute('download')) return false;        // download
+      if (a.getAttribute('href')?.startsWith('#')) return false; // in-page
+      return true;
+    }
+
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a');
+      if (!shouldIntercept(a)) return;
+
+      // Respect reduced motion
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      e.preventDefault();
+      if (!prefersReduced) {
+        document.body.classList.add('is-fading');
+        setTimeout(() => (location.href = a.href), DURATION);
+      } else {
+        location.href = a.href;
+      }
+    });
+  })();
+</script>
 <body>
   <!-- ==================== HEADER ==================== -->
   <header class="thin-header">
@@ -39,10 +84,33 @@
     <section class="hero">
       <h2>Welcome to The Quantifier</h2>
       <p>
-        Exploring the intersection of logic, creativity, and design.  
-        Here you'll find posts about mathematics, technology, and the occasional philosophical musing.
+        Where logic meets imagination. This space explores the worlds of 
+        <strong>mathematics</strong>, <strong>programming</strong>, and <strong>gaming</strong> — 
+        three disciplines that thrive on structure, creativity, and curiosity.
       </p>
-      <a href="blog.html" class="button">Visit the Blog</a>
+
+      <p>
+        In <strong>mathematics</strong>, I dive into proofs, problem-solving, and abstract reasoning, 
+        showing how precision and creativity intertwine to reveal elegant truths.
+      </p>
+
+      <p>
+        In <strong>programming</strong>, I build things — from 
+        <em>Godot-powered RPGs</em> to <em>websites</em> and <em>apps</em> — translating 
+        logic into living, interactive systems.
+      </p>
+
+      <p>
+        And in <strong>gaming</strong>, I explore the art of play and performance, from 
+        <em>modded Minecraft engineering</em> to <em>Steam worlds</em> running on my 
+        newly built PC.
+      </p>
+
+      <p>
+        Whether it’s uncovering a new theorem, refining a game mechanic, or optimizing 
+        a creative workflow, my goal is to understand and create — to quantify the beauty 
+        of systems both logical and human.
+      </p>
     </section>
 
     <section class="highlights">
@@ -55,8 +123,8 @@
         <p>Projects in Java, Python, and Godot — building systems that bridge logic and imagination.</p>
       </div>
       <div class="card">
-        <h3>Thoughts</h3>
-        <p>Occasional reflections on learning, creativity, and life as a thinker in a digital world.</p>
+        <h3>Gaming</h3>
+        <p>Occasional reflections on learning, creativity, and the endless adventure of gaming in a digital world.</p>
       </div>
     </section>
   </main>

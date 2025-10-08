@@ -104,6 +104,47 @@ body {
   }
 }
 
+/* ========== PAGE BANNER (Shared) ========== */
+.banner {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+}
+
+.banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.4;
+}
+
+.banner-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fafafa;
+  text-align: center;
+}
+
+.banner-overlay h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.banner-overlay p {
+  font-style: italic;
+  color: #cfcfd4;
+}
+
+/* Responsive Banner */
+@media (max-width: 700px) {
+  .banner {
+    height: 220px;
+  }
+}
+
 /* ========== MAIN ========== */
 .hero {
   text-align: center;
@@ -207,4 +248,23 @@ footer {
   border: 0;
   padding: 0;
   margin: -1px;
+}
+
+/* ===== Page fade transitions ===== */
+:root { --fade-duration: 220ms; }
+
+body {
+  opacity: 0;                      /* start hidden */
+  transition: opacity var(--fade-duration) ease;
+}
+
+/* When page is ready, fade in */
+body.is-ready { opacity: 1; }
+
+/* When navigating away, fade out */
+body.is-fading { opacity: 0; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  body { transition: none !important; opacity: 1 !important; }
 }
