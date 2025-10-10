@@ -11,31 +11,16 @@
   <!-- Site CSS -->
   <link rel="stylesheet" href="styles/default.css" />
 
+  <!-- Include loader -->
+  <script src="scripts/include.js" defer></script>
+
   <!-- Course JS (kept external to satisfy rubric) -->
   <script src="scripts/main.js" defer></script>
 </head>
-<body>
-  <!-- ==================== HEADER ==================== -->
-  <header>
-    <h1>John Hand – ITIS 3135</h1>
-    <p class="tagline">Front-End Web App Development</p>
 
-    <nav aria-label="Main Navigation">
-      <div class="site-nav">
-        <a href="index.html" aria-current="page">Home</a><span class="sep">•</span>
-        <a href="introduction.html">Introduction</a><span class="sep">•</span>
-        <a href="contract.html">Course Contract</a><span class="sep">•</span>
-        <a href="website_evaluations.html">Website Evaluations</a><span class="sep">•</span>
-        <a href="stuff/STUFF%20PAGE%20🙂%20&amp;%20BAD.htm">CRAPPY Webpage</a><span class="sep">•</span>
-        <a href="fccfsjs_outline.html">FCC JS Outline</a><span class="sep">•</span>
-        <a href="https://webpages.charlotte.edu/jhand12/" target="_blank" rel="noopener">CLT Web</a><span class="sep">•</span>
-        <a href="https://thequantifier.github.io/" target="_blank" rel="noopener">GitHub.io</a><span class="sep">•</span>
-        <a href="https://github.com/TheQuantifier" target="_blank" rel="noopener">GitHub</a><span class="sep">•</span>
-        <a href="jolly-hound/index.html" target="_blank" rel="noopener">Jolly Hound (Home)</a><span class="sep">•</span>
-        <a href="jolly-hound/about.html" target="_blank" rel="noopener">Jolly Hound (About)</a>
-      </div>
-    </nav>
-  </header>
+<body>
+  <!-- ==================== HEADER (Dynamic Include) ==================== -->
+  <header data-include="components/header.html"></header>
 
   <!-- ==================== MAIN CONTENT ==================== -->
   <main>
@@ -65,8 +50,7 @@
       <h3 id="about-evals">About “Website Evaluations”</h3>
       <p>
         This page applies the CRAP principles (Contrast, Repetition, Alignment, Proximity)
-        to one well-designed site and one poorly designed site. It includes brief descriptions
-        and bullet assessments for each principle.
+        to one well-designed site and one poorly designed site.
       </p>
       <p>View it here: <a href="website_evaluations.html">website_evaluations.html</a></p>
     </section>
@@ -74,12 +58,11 @@
     <section aria-labelledby="about-crappy">
       <h3 id="about-crappy">About the “CRAPPY Webpage”</h3>
       <p>
-        A deliberately bad page demonstrating common anti-patterns (bad file naming, broken image
-        practices, inline styles, poor contrast, out-of-order headings, etc.). This exists solely
-        to illustrate what <em>not</em> to do.
+        A deliberately bad page demonstrating common anti-patterns (bad file naming,
+        broken image practices, inline styles, poor contrast, out-of-order headings, etc.).
       </p>
       <p>
-        View it here: 
+        View it here:
         <a href="stuff/STUFF%20PAGE%20🙂%20&amp;%20BAD.htm">
           stuff/STUFF PAGE 🙂 &amp; BAD.htm
         </a>
@@ -87,24 +70,7 @@
     </section>
   </main>
 
-  <!-- ==================== FOOTER ==================== -->
-  <footer>
-    <nav class="site-nav" aria-label="Site menu">
-      <a href="index.html">Home</a><span class="sep">•</span>
-      <a href="introduction.html">Introduction</a><span class="sep">•</span>
-      <a href="contract.html">Contract</a><span class="sep">•</span>
-      <a href="website_evaluations.html">Website Evaluations</a><span class="sep">•</span>
-      <a href="stuff/STUFF%20PAGE%20🙂%20&amp;%20BAD.htm">CRAPPY Webpage</a><span class="sep">•</span>
-      <a href="fccfsjs_outline.html">FCC JS Outline</a><span class="sep">•</span>
-      <a href="https://webpages.charlotte.edu/jhand12/" target="_blank" rel="noopener">CLT Web</a><span class="sep">•</span>
-      <a href="https://thequantifier.github.io/" target="_blank" rel="noopener">GitHub.io</a><span class="sep">•</span>
-      <a href="https://github.com/TheQuantifier" target="_blank" rel="noopener">GitHub</a><span class="sep">•</span>
-      <a href="jolly-hound/index.html" target="_blank" rel="noopener">Jolly Hound (Home)</a><span class="sep">•</span>
-      <a href="jolly-hound/about.html" target="_blank" rel="noopener">Jolly Hound (About)</a>
-    </nav>
-
-    <p class="built-by">Designed by <strong>Manus Webworks</strong>.</p>
-    <p class="copyright">&copy; 2025 John Hand. All rights reserved.</p>
-  </footer>
+  <!-- ==================== FOOTER (Dynamic Include) ==================== -->
+  <footer data-include="components/footer.html"></footer>
 </body>
 </html>
