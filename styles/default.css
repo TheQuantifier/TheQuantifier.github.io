@@ -268,3 +268,44 @@ body.is-fading { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   body { transition: none !important; opacity: 1 !important; }
 }
+
+/* ========== HOME PAGE BACKGROUND IMAGE ========== */
+body.home {
+  position: relative;
+  overflow-x: hidden;
+}
+
+body.home::before {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: clamp(44vmin, 60vmin, 78vmin);
+  height: clamp(44vmin, 60vmin, 78vmin);
+  transform: translate(-50%, -50%);
+  background-image: url("../images/home-background.jpg"); /* adjust extension if needed */
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  opacity: 0.60;             /* subtle fade */
+  filter: blur(1.5px);       /* slight blur for softness */
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.04) inset,  /* subtle inner ring */
+    0 0 140px rgba(0, 0, 0, 0.45);              /* soft outer glow */
+  z-index: -1;
+  pointer-events: none;
+}
+
+main,
+footer {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  body.home::before {
+    width: clamp(56vmin, 70vmin, 84vmin);
+    height: clamp(56vmin, 70vmin, 84vmin);
+    opacity: 0.18;
+  }
+}
