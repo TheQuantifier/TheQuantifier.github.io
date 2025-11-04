@@ -17,6 +17,9 @@
   <link rel="stylesheet" href="styles/default.css" />
   <link rel="stylesheet" href="styles/page.css" />
 
+  <!-- Highlight.js (for pretty, copyable code output) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+
   <!-- Dynamic include loader and site JS (external per rubric) -->
   <script src="scripts/include.js" defer></script>
   <script src="scripts/main.js" defer></script>
@@ -33,10 +36,10 @@
       <p class="muted">Please submit the form below.</p>
     </header>
 
-    <!-- Result container (populated by JS on submit) -->
+    <!-- Result container (populated by JS on submit / Generate HTML/JSON) -->
     <section id="result-view" hidden aria-live="polite">
       <h3>Result Preview</h3>
-      <!-- JS will inject the rendered introduction here -->
+      <!-- JS will inject the rendered introduction or code block here -->
     </section>
 
     <!-- ============ FORM VIEW ============ -->
@@ -189,6 +192,10 @@
           <button type="submit" class="btn primary">Submit</button>
           <button type="reset" class="btn">Reset</button>
           <button type="button" id="clear-all" class="btn danger">Clear</button>
+          <!-- NEW: Generate JSON button (left) -->
+          <button type="button" id="btnGenerateJson" class="btn">Generate JSON</button>
+          <!-- NEW: Generate HTML button (right) -->
+          <button type="button" id="btnGenerateHtml" class="btn">Generate HTML</button>
         </div>
 
         <!-- Inline validation summary -->
@@ -205,5 +212,13 @@
 
   <!-- Assignment logic: modules are deferred by default; no 'defer' attribute -->
   <script src="scripts/introduction.js" type="module"></script>
+
+  <!-- Highlight.js runtime (must load before generator scripts) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.configure({ languages: ['json','html'] });</script>
+
+  <!-- Generators (non-module) -->
+  <script src="scripts/generate_html.js"></script>
+  <script src="scripts/generate_json.js"></script>
 </body>
 </html>
