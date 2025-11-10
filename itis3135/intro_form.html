@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  File: intro_form.html
+  Purpose: BYO - Introduction Page Form
+-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Introduction Form — ITIS 3135</title>
+  <meta name="description" content="Fill this form to generate an Introduction page clone (H2 will read 'Introduction Form')." />
+
+  <!-- Accumulus (required) -->
+  <script src="https://lint.page/kit/4d0fe3.js" crossorigin="anonymous"></script>
+
+  <!-- Site CSS -->
+  <link rel="stylesheet" href="styles/default.css" />
+  <link rel="stylesheet" href="styles/page.css" />
+
+  <!-- Highlight.js (for pretty, copyable code output) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+
+  <!-- Dynamic include loader and site JS (external per rubric) -->
+  <script src="scripts/include.js" defer></script>
+  <script src="scripts/main.js" defer></script>
+</head>
+
+<body>
+  <!-- ==================== HEADER (Dynamic Include) ==================== -->
+  <header data-include="components/header.html"></header>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main id="content" class="wrap">
+    <header class="page-head">
+      <h2>Introduction Form</h2>
+      <p class="muted">Please submit the form below.</p>
+    </header>
+
+    <!-- Result container (populated by JS on submit / Generate HTML/JSON) -->
+    <section id="result-view" hidden aria-live="polite">
+      <h3>Result Preview</h3>
+      <!-- JS will inject the rendered introduction or code block here -->
+    </section>
+
+    <!-- ============ FORM VIEW ============ -->
+    <section id="form-view" aria-live="polite">
+      <h3>Introduction Form Inputs</h3>
+      <form id="intro-form" novalidate>
+        <!-- Identity -->
+        <fieldset>
+          <legend>Identity</legend>
+
+          <div class="col-half">
+            <label for="firstName">First Name<span aria-hidden="true"> *</span>
+              <input id="firstName" name="firstName" type="text" required placeholder="John" autocomplete="given-name" />
+            </label>
+          </div>
+
+          <div class="col-half">
+            <label for="middleName">Middle Name / Initial (optional)
+              <input id="middleName" name="middleName" type="text" placeholder="Alexander or A." autocomplete="additional-name" />
+            </label>
+          </div>
+
+          <div class="col-half">
+            <label for="preferredName">Preferred / Nickname (optional)
+              <input id="preferredName" name="preferredName" type="text" placeholder="Iohannes Manus" />
+            </label>
+          </div>
+
+          <div class="col-half">
+            <label for="lastName">Last Name<span aria-hidden="true"> *</span>
+              <input id="lastName" name="lastName" type="text" required placeholder="Hand" autocomplete="family-name" />
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Acknowledgment -->
+        <fieldset>
+          <legend>Acknowledgment</legend>
+          <label for="ackStatement">Acknowledgment Statement<span aria-hidden="true"> *</span>
+            <input id="ackStatement" name="ackStatement" type="text" required placeholder="I certify that this page is my work..." />
+          </label>
+
+          <!-- Use text + pattern instead of date to avoid polyfill warning -->
+          <label for="ackDate">Acknowledgment Date<span aria-hidden="true"> *</span>
+            <input id="ackDate" name="ackDate" type="text" required
+                   placeholder="YYYY-MM-DD" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+                   title="Enter date as YYYY-MM-DD" />
+          </label>
+        </fieldset>
+
+        <!-- Mascot -->
+        <fieldset>
+          <legend>Mascot</legend>
+
+          <div class="col-half">
+            <label for="mascotAdj">Mascot Adjective<span aria-hidden="true"> *</span>
+              <input id="mascotAdj" name="mascotAdj" type="text" required placeholder="e.g., Jolly" />
+            </label>
+          </div>
+
+          <div class="col-half">
+            <label for="mascotAnimal">Mascot Animal<span aria-hidden="true"> *</span>
+              <input id="mascotAnimal" name="mascotAnimal" type="text" required placeholder="e.g., Hound" />
+            </label>
+          </div>
+
+          <label for="divider">Divider Character<span aria-hidden="true"> *</span>
+            <input id="divider" name="divider" type="text" required maxlength="3" placeholder="~, |, ♥, •, etc." />
+          </label>
+        </fieldset>
+
+        <!-- Image -->
+        <fieldset>
+          <legend>Picture</legend>
+          <p class="muted">Defaults to your existing intro image. You may let visitors upload their own.</p>
+          <label for="picture">Upload Image (optional)
+            <input id="picture" name="picture" type="file" accept="image/*" />
+          </label>
+          <label for="pictureUrl">Or Image URL (optional)
+            <input id="pictureUrl" name="pictureUrl" type="url" placeholder="https://example.com/me.jpg" />
+          </label>
+          <label for="pictureCaption">Picture Caption<span aria-hidden="true"> *</span>
+            <input id="pictureCaption" name="pictureCaption" type="text" required placeholder="A short descriptive caption" />
+          </label>
+        </fieldset>
+
+        <!-- Statement -->
+        <fieldset>
+          <legend>Personal Statement</legend>
+          <label for="personalStatement">Statement<span aria-hidden="true"> *</span>
+            <textarea id="personalStatement" name="personalStatement" rows="4" required placeholder="A few sentences about you."></textarea>
+          </label>
+        </fieldset>
+
+        <!-- 7 Main Bullets -->
+        <fieldset>
+          <legend>Seven Main Bullets</legend>
+          <p class="muted">These typically include Personal Background, Professional Background, etc.</p>
+          <div id="bullets">
+            <!-- Seeded by scripts/introduction.js -->
+          </div>
+        </fieldset>
+
+        <!-- Courses -->
+        <fieldset>
+          <legend>Courses</legend>
+          <p class="muted">Add each course with department, number, name, and a short reason.</p>
+
+          <div id="courses">
+            <!-- Dynamic course rows appear here -->
+          </div>
+
+          <p>
+            <button type="button" id="add-course" class="btn" aria-label="Add course">+ Add Course</button>
+          </p>
+        </fieldset>
+
+        <!-- Quote -->
+        <fieldset>
+          <legend>Quote</legend>
+          <label for="quote">Quote<span aria-hidden="true"> *</span>
+            <textarea id="quote" name="quote" rows="2" required placeholder="“What you do speaks so loudly...”"></textarea>
+          </label>
+          <label for="quoteAuthor">Author<span aria-hidden="true"> *</span>
+            <input id="quoteAuthor" name="quoteAuthor" type="text" required placeholder="Ralph Waldo Emerson" />
+          </label>
+        </fieldset>
+
+        <!-- Optional fun/share -->
+        <fieldset>
+          <legend>Extras (Optional)</legend>
+          <label for="funnyThing">Funny thing (optional)
+            <input id="funnyThing" name="funnyThing" type="text" placeholder="A quirky fact or joke" />
+          </label>
+          <label for="shareThing">Something to share (optional)
+            <input id="shareThing" name="shareThing" type="text" placeholder="Something you'd like to share" />
+          </label>
+        </fieldset>
+
+        <!-- Links -->
+        <fieldset>
+          <legend>Links (5 total)</legend>
+          <div id="links">
+            <!-- Seeded by scripts/introduction.js -->
+          </div>
+        </fieldset>
+
+        <!-- Controls -->
+        <div class="actions">
+          <button type="submit" class="btn primary">Submit</button>
+          <button type="reset" class="btn">Reset</button>
+          <button type="button" id="clear-all" class="btn danger">Clear</button>
+          <!-- NEW: Generate JSON button (left) -->
+          <button type="button" id="btnGenerateJson" class="btn">Generate JSON</button>
+          <!-- NEW: Generate HTML button (right) -->
+          <button type="button" id="btnGenerateHtml" class="btn">Generate HTML</button>
+        </div>
+
+        <!-- Inline validation summary -->
+        <div id="errors" class="errors" role="alert" aria-live="assertive" hidden></div>
+      </form>
+    </section>
+
+    <!-- Hidden “default image URL” used when no file is chosen -->
+    <input type="hidden" id="defaultImageUrl" value="images/intro/profile.jpg" />
+  </main>
+
+  <!-- ==================== FOOTER (Dynamic Include) ==================== -->
+  <footer data-include="components/footer.html"></footer>
+
+  <!-- Assignment logic: modules are deferred by default; no 'defer' attribute -->
+  <script src="scripts/introduction.js" type="module"></script>
+
+  <!-- Highlight.js runtime (must load before generator scripts) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.configure({ languages: ['json','html'] });</script>
+
+  <!-- Generators (non-module) -->
+  <script src="scripts/generate_html.js"></script>
+  <script src="scripts/generate_json.js"></script>
+</body>
+</html>

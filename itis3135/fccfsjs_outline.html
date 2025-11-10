@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Legacy JS Algorithms & Data Structures – ITIS 3135 – John Hand</title>
+  <title>FCC Full Stack JavaScript Outline – ITIS 3135 – John Hand</title>
 
   <!-- Accumulus (required) -->
   <script src="https://lint.page/kit/4d0fe3.js" crossorigin="anonymous"></script>
@@ -13,6 +13,26 @@
 
   <!-- Include loader for shared header/footer -->
   <script src="scripts/include.js" defer></script>
+
+  <style>
+    /* Page-local tweaks: keeps table balanced and readable in narrow widths */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    caption { text-align: left; font-weight: 600; margin-bottom: .5rem; }
+    thead th { text-align: left; border-bottom: 2px solid var(--border, #e5e7eb); padding: .6rem .5rem; }
+    tbody td, tbody th[scope="row"] { padding: .6rem .5rem; vertical-align: top; border-bottom: 1px solid var(--border, #eef0f3); }
+
+    /* ✅ fixed: removed element qualification */
+    .steps { white-space: nowrap; }
+    .desc { max-width: 52ch; }
+
+    .muted-note { color: var(--muted, #6b7280); font-size: .95rem; }
+    .summary-cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 1rem 0 1.25rem; }
+    .card { background: var(--card-bg, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 10px; padding: .9rem 1rem; box-shadow: var(--shadow-sm, 0 2px 6px rgba(0,0,0,.04)); }
+    .schedule-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .signature { margin-top: .75rem; font-style: italic; }
+    @media (max-width: 640px){ .desc { max-width: 42ch; } }
+</style>
 </head>
 <body>
   <!-- ==================== HEADER (Dynamic Include) ==================== -->
@@ -20,103 +40,181 @@
 
   <!-- ==================== MAIN CONTENT ==================== -->
   <main>
-    <h2>freeCodeCamp – Legacy JavaScript Algorithms and Data Structures (Outline)</h2>
+    <h1>freeCodeCamp — Full-Stack Curriculum (JavaScript Track) Outline</h1>
     <p class="profile">
-      This outline summarizes the <a href="https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/" target="_blank" rel="noopener">
-      freeCodeCamp Legacy JavaScript Algorithms and Data Structures certification</a>, including each curriculum section, step count, and brief description.
+      This page outlines the <strong>JavaScript</strong> portion of the <em>Certified Full Stack Developer Curriculum</em> (freeCodeCamp). It lists each
+      section, current step/page counts (where verified), and a short description. The track contains <strong>~20 sections</strong> and <strong>917 total steps</strong> (Fall ’25).
     </p>
+
+    <section aria-labelledby="summary-heading" class="summary-cards">
+      <div class="card">
+        <h3 id="summary-heading">At-a-Glance</h3>
+        <ul>
+          <li><strong>Total sections:</strong> 22</li>
+          <li><strong>Total steps:</strong> 917</li>
+          <li><strong>Format:</strong> short lessons, quizzes, small tasks, and reviews</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>How I captured this</h3>
+        <p>Section titles and numbers were transcribed from the FCC JavaScript website</p>
+      </div>
+    </section>
 
     <!-- Outline table -->
     <section aria-labelledby="outline-heading" class="table-wrap">
-      <h3 id="outline-heading">Legacy JS Curriculum Overview</h3>
+      <h2 id="outline-heading">JavaScript Curriculum Overview (Fall ’25)</h2>
       <table>
-        <caption>Legacy JS Curriculum Sections (source: freeCodeCamp.org)</caption>
+        <caption>Sections appear in the order shown within FCC’s “JavaScript” course website.</caption>
         <thead>
           <tr>
             <th scope="col">Section</th>
-            <th scope="col">Steps</th>
+            <th scope="col">Steps / Pages</th>
             <th scope="col">Description (1–3 sentences)</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td><strong>Basic JavaScript</strong></td>
-            <td class="steps">113</td>
-            <td>Fundamentals of JavaScript programming: variables, numbers, strings, arrays, objects, functions, loops, and conditionals.</td>
+          <tr data-steps="5 quiz pages">
+            <th scope="row">Code Editors</th>
+            <td class="steps"><strong>5</strong> steps</td>
+            <td class="desc">Quick checks on editor fundamentals: files vs. projects, tabs/spaces, language modes, and extensions. Ensures you can configure an editor before writing code.</td>
           </tr>
-          <tr>
-            <td><strong>ES6</strong></td>
-            <td class="steps">29</td>
-            <td>Modern syntax including <code>let</code>/<code>const</code>, arrow functions, template literals, destructuring, classes, and modules.</td>
+          <tr data-steps="62">
+            <th scope="row">Variables and Strings</th>
+            <td class="steps"><strong>62</strong> steps</td>
+            <td class="desc">Declaring and assigning variables; string creation, interpolation, indexing, slicing, and common string methods. Emphasis on predictable naming and immutability of strings.</td>
           </tr>
-          <tr>
-            <td><strong>Regular Expressions</strong></td>
-            <td class="steps">33</td>
-            <td>Pattern matching using regex, including literals, character classes, quantifiers, grouping, anchors, and lookaheads.</td>
+          <tr data-steps="37">
+            <th scope="row">Booleans and Numbers</th>
+            <td class="steps"><strong>37</strong> steps</td>
+            <td class="desc">Boolean logic, truthy/falsy, arithmetic, operator precedence, and common numeric pitfalls (rounding, NaN, Infinity). Introduces comparisons and guards.</td>
           </tr>
-          <tr>
-            <td><strong>Debugging</strong></td>
-            <td class="steps">12</td>
-            <td>Techniques to identify and fix syntax, runtime, and logic errors using console output and debugging tools.</td>
+          <tr data-steps="38">
+            <th scope="row">Functions</th>
+            <td class="steps">38</td>
+            <td class="desc">Function declarations vs. expressions, parameters/defaults, return values, scope/closures, and pure vs. impure functions.</td>
           </tr>
-          <tr>
-            <td><strong>Basic Data Structures</strong></td>
-            <td class="steps">20</td>
-            <td>Introduction to arrays and objects, understanding their differences, and practicing useful methods like <code>splice</code>, <code>slice</code>, and <code>keys</code>.</td>
+          <tr data-steps="35">
+            <th scope="row">Arrays</th>
+            <td class="steps">35</td>
+            <td class="desc">Indexed collections, iteration patterns, and the core toolbox: <code>push</code>, <code>pop</code>, <code>slice</code>, <code>splice</code>, <code>includes</code>, and mapping/filtering.</td>
           </tr>
-          <tr>
-            <td><strong>Basic Algorithm Scripting</strong></td>
-            <td class="steps">16</td>
-            <td>Problem-solving with small algorithmic challenges, such as string manipulation, conversions, and numeric operations.</td>
+          <tr data-steps="28">
+            <th scope="row">Objects</th>
+            <td class="steps">28</td>
+            <td class="desc">Key–value modeling, property access, mutation vs. cloning, and object utilities. Sets up thinking in records and dictionaries.</td>
           </tr>
-          <tr>
-            <td><strong>Object Oriented Programming</strong></td>
-            <td class="steps">26</td>
-            <td>OOP concepts in JavaScript: constructors, prototypes, inheritance, and the use of <code>this</code> to manage object state.</td>
+          <tr data-steps="22">
+            <th scope="row">Loops</th>
+            <td class="steps">22</td>
+            <td class="desc"><code>for</code>, <code>while</code>, <code>for...of</code>, and <code>for...in</code>; off-by-one and termination safety. When to prefer array methods over manual loops.</td>
           </tr>
-          <tr>
-            <td><strong>Functional Programming</strong></td>
-            <td class="steps">24</td>
-            <td>Functional principles like pure functions, immutability, and use of methods such as <code>map</code>, <code>filter</code>, and <code>reduce</code>.</td>
+          <tr data-steps="31">
+            <th scope="row">JavaScript Fundamentals Review</th>
+            <td class="steps">31</td>
+            <td class="desc">Overview of JavaScript fundamentals</td>
           </tr>
-          <tr>
-            <td><strong>Intermediate Algorithm Scripting</strong></td>
-            <td class="steps">21</td>
-            <td>More advanced problem-solving combining functional and object-oriented patterns with data structures.</td>
+          <tr data-steps="37">
+            <th scope="row">Higher Order Functions and Callbacks</th>
+            <td class="steps">37</td>
+            <td class="desc">Passing functions as values, composing behavior, and idioms like <code>map</code>/<code>filter</code>/<code>reduce</code>. Callback patterns and gotchas.</td>
           </tr>
-          <tr>
-            <td><strong>JavaScript Algorithms and Data Structures Projects</strong></td>
-            <td class="steps">5 projects</td>
-            <td>Capstone projects: Palindrome Checker, Roman Numeral Converter, Caesars Cipher, Telephone Number Validator, and Cash Register.</td>
+          <tr data-steps="87">
+            <th scope="row">DOM Manipulation and Events</th>
+            <td class="steps">87</td>
+            <td class="desc">Selecting and updating elements, templating basics, and wiring UI behavior with the event loop and event propagation.</td>
+          </tr>
+          <tr data-steps="42">
+            <th scope="row">JavaScript and Accessibility</th>
+            <td class="steps">42</td>
+            <td class="desc">Progressive enhancement, focus management, ARIA relationships, keyboard interactions, and accessible patterns for dynamic UIs.</td>
+          </tr>
+          <tr data-steps="8">
+            <th scope="row">Debugging</th>
+            <td class="steps">8</td>
+            <td class="desc">Using the console, breakpoints, stepping, and watch expressions. Techniques to isolate logic, timing, and state bugs.</td>
+          </tr>
+          <tr data-steps="47">
+            <th scope="row">Basic Regex</th>
+            <td class="steps">47</td>
+            <td class="desc">Constructing regular expressions, character sets, quantifiers, groups, anchors, and common text-processing patterns.</td>
+          </tr>
+          <tr data-steps="103">
+            <th scope="row">Form Validation</th>
+            <td class="steps">103</td>
+            <td class="desc">Constraints, custom validators, and sanitization. Client-side feedback patterns that complement server-side checks.</td>
+          </tr>
+          <tr data-steps="5">
+            <th scope="row">Dates</th>
+            <td class="steps">5</td>
+            <td class="desc">Working with <code>Date</code>, parsing/formatting, time zones, and relative times. Common pitfalls and reliable comparisons.</td>
+          </tr>
+          <tr data-steps="55">
+            <th scope="row">Audio and Video Events</th>
+            <td class="steps">55</td>
+            <td class="desc">Media element APIs, event handling, and accessibility concerns for custom controls.</td>
+          </tr>
+          <tr data-steps="37">
+            <th scope="row">Maps and Sets</th>
+            <td class="steps">37</td>
+            <td class="desc">When to choose <code>Map</code>/<code>Set</code> over objects/arrays; performance considerations and common methods.</td>
+          </tr>
+          <tr data-steps="78">
+            <th scope="row">localStorage and CRUD Operations</th>
+            <td class="steps">78</td>
+            <td class="desc">Persisting small datasets, JSON serialization, and building minimal create/read/update/delete flows.</td>
+          </tr>
+          <tr data-steps="68">
+            <th scope="row">Classes</th>
+            <td class="steps">68</td>
+            <td class="desc">Class syntax, constructors, instance vs. static members, inheritance, and composition trade-offs.</td>
+          </tr>
+          <tr data-steps="112">
+            <th scope="row">Recursion</th>
+            <td class="steps">112</td>
+            <td class="desc">Thinking inductively, base/recursive cases, stack depth, and converting between loops and recursion.</td>
+          </tr>
+          <tr data-steps="23">
+            <th scope="row">Functional Programming</th>
+            <td class="steps">23</td>
+            <td class="desc">Immutability, referential transparency, and composing small pure functions for predictable code.</td>
+          </tr>
+          <tr data-steps="36">
+            <th scope="row">Asynchronous JavaScript</th>
+            <td class="steps">36</td>
+            <td class="desc">Callbacks to Promises to <code>async/await</code>, the event loop, microtasks, and robust async error handling.</td>
+          </tr>
+          <tr data-steps="2">
+            <th scope="row">JavaScript Review</th>
+            <td class="steps">2</td>
+            <td class="desc">Cumulative practice tying together the core ideas from the track in short exercises and mini-projects.</td>
           </tr>
         </tbody>
       </table>
-      <p class="muted-note">All section titles and counts are based on the <a href="https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/" target="_blank" rel="noopener">freeCodeCamp JavaScript curriculum</a>.</p>
     </section>
 
     <!-- Schedule & Commitment -->
     <section class="schedule" aria-labelledby="schedule-heading">
-      <h3 id="schedule-heading">Completion Schedule (4–6 Weeks) & Statement</h3>
+      <h2 id="schedule-heading">My 4-Week Completion Plan & Statement</h2>
       <div class="schedule-grid">
         <div class="card">
+          <h3>General Schedule (example)</h3>
           <ul>
-            <li><strong>Week 1:</strong> Basic JavaScript (start) · ES6</li>
-            <li><strong>Week 2:</strong> Basic JavaScript (finish) · Regular Expressions · Debugging</li>
-            <li><strong>Week 3:</strong> Basic Data Structures · Basic Algorithm Scripting</li>
-            <li><strong>Week 4:</strong> OOP · Functional Programming</li>
-            <li><strong>Week 5:</strong> Intermediate Algorithm Scripting</li>
-            <li><strong>Week 6:</strong> 5 Projects (polish & submit)</li>
+            <li><strong>Week 1:</strong> Code Editors · Variables &amp; Strings · Booleans &amp; Numbers · Functions</li>
+            <li><strong>Week 2:</strong> Arrays · Objects · Loops · HOF &amp; Callbacks · Debugging</li>
+            <li><strong>Week 3:</strong> DOM &amp; Events · JS &amp; Accessibility · Basic Regex · Form Validation · Dates</li>
+            <li><strong>Week 4:</strong> Audio/Video Events · Maps &amp; Sets · localStorage/CRUD · Classes · Recursion · FP · Async JS · Review</li>
           </ul>
-          <p class="small muted-note">Schedule assumes steady progress and may adjust for semester breaks. Total time ≤ 6–7 weeks per assignment guidance.</p>
+          <p class="muted-note">Adjust around any semester breaks; target ≤ 6 weeks if you prefer a lighter pace.</p>
         </div>
         <div class="card">
           <p>
             I, <strong>John Hand</strong>, intend to complete the freeCodeCamp
-            <em>Legacy JavaScript Algorithms and Data Structures</em> section within
-            <strong>6 weeks</strong> according to the schedule shown. I acknowledge that this is a
-            <strong>single assignment</strong> and I am responsible for pacing myself.
+            <em>Full-Stack Developer – JavaScript</em> section within
+            <strong>4–6 weeks</strong> according to the schedule above. I acknowledge this is a
+            <strong>single assignment</strong> (not split into parts) and I’m responsible for pacing myself.
           </p>
-          <p class="signature">Signed: John Hand • Date: 6 October 2025</p>
+          <p class="signature">Signed: John Hand • Date: <span id="today"></span></p>
         </div>
       </div>
     </section>
@@ -124,5 +222,11 @@
 
   <!-- ==================== FOOTER (Dynamic Include) ==================== -->
   <footer data-include="components/footer.html"></footer>
+
+  <script>
+    // Fill "today" automatically.
+    document.getElementById("today").textContent =
+      new Date().toLocaleDateString(undefined, {year:"numeric", month:"long", day:"numeric"});
+  </script>
 </body>
 </html>

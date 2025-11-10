@@ -132,3 +132,67 @@ td:nth-child(3) { width: 56%; }
   text-underline-offset: 3px;
   font-weight: 700;
 }
+
+/* ---------- Project Overview Additions ---------- */
+
+/* Section spacing and readability */
+section {
+  margin-bottom: 1.5rem;
+}
+
+/* Use a class instead of a qualified heading selector */
+.section-title {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Figure styling for sitemap and wireframe */
+figure {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+figcaption {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 0.4rem;
+}
+
+/* Lists within articles for page details */
+article ul {
+  background: #f9fafb;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin: 0.75rem 0 1rem;
+}
+
+/* Navigation bar */
+header nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.2rem;
+  margin-top: 0.5rem;
+}
+
+/* Footer spacing */
+footer p {
+  font-size: 0.9rem;
+  margin: 0.3rem 0;
+  text-align: center;
+}
+
+/* Highlight important words (like labels or filenames) */
+strong {
+  color: #1e3a8a;
+}
+
+/* Inline code styling */
+code {
+  background: #f3f4f6;
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
+  font-family: Consolas, Monaco, monospace;
+  font-size: 0.9rem;
+}
