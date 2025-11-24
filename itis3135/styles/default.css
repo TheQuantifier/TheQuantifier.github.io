@@ -196,3 +196,15 @@ code {
   font-family: Consolas, Monaco, monospace;
   font-size: 0.9rem;
 }
+
+.checklist input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.checklist ul {
+    margin-left: 25px;
+}
+
+.checklist li {
+    margin-bottom: 6px;
+}
