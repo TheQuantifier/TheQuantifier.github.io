@@ -110,36 +110,48 @@
 
       <form id="txnForm" class="txn-form">
         <div class="form-row">
-          <label>
+          <label for="txnDate">
             <span>Date</span>
-            <input type="date" id="txnDate" required />
           </label>
-          <label>
+          <input
+            type="date"
+            id="txnDate"
+            name="txnDate"
+            required
+            aria-describedby="dateHelp"
+          />
+          <p id="dateHelp" class="subtle" style="font-size:0.9rem;">
+            Format: YYYY-MM-DD. Some browsers may display a text field instead of a date picker.
+          </p>
+
+          <label for="txnAmount">
             <span>Amount</span>
-            <input type="number" id="txnAmount" step="0.01" required />
           </label>
+          <input type="number" id="txnAmount" name="txnAmount" step="0.01" required />
         </div>
 
         <div class="form-row">
-          <label>
+          <label for="txnSource">
             <span>Source</span>
-            <input type="text" id="txnSource" required />
           </label>
-          <label>
+          <input type="text" id="txnSource" name="txnSource" required />
+
+          <label for="txnCategory">
             <span>Category</span>
-            <input type="text" id="txnCategory" required />
           </label>
+          <input type="text" id="txnCategory" name="txnCategory" required />
         </div>
 
         <div class="form-row">
-          <label>
+          <label for="txnMethod">
             <span>Payment Method</span>
-            <input type="text" id="txnMethod" />
           </label>
-          <label>
+          <input type="text" id="txnMethod" name="txnMethod" />
+
+          <label for="txnNotes">
             <span>Notes</span>
-            <input type="text" id="txnNotes" />
           </label>
+          <input type="text" id="txnNotes" name="txnNotes" />
         </div>
 
         <div class="modal-actions">
@@ -150,8 +162,22 @@
     </div>
   </div>
 
-  <!-- Scripts (no API) -->
+  <!-- Scripts -->
   <script defer src="./scripts/default.js"></script>
   <script defer src="./scripts/home.js"></script>
+
+  <!-- JS fallback for browsers that do NOT support <input type="date"> -->
+  <script>
+    (function () {
+      var input = document.createElement("input");
+      input.setAttribute("type", "date");
+      if (input.type !== "date") {
+        var help = document.getElementById("dateHelp");
+        if (help) {
+          help.textContent = "Your browser does not support date pickers. Please enter date as YYYY-MM-DD.";
+        }
+      }
+    })();
+  </script>
 </body>
 </html>

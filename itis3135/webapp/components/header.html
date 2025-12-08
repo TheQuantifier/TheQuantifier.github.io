@@ -1,5 +1,6 @@
 <header>
   <div class="navbar">
+    
     <!-- Left: Logo -->
     <div class="logo-group">
       <h1 class="logo">Finance App</h1>
@@ -7,25 +8,38 @@
     </div>
 
     <!-- Middle: Navigation -->
-    <nav class="nav-links">
-      <a href="home.html" class="active">Home</a>
+    <nav class="nav-links" role="navigation" aria-label="Main Navigation">
+      <a href="home.html">Home</a>
       <a href="upload.html">Upload</a>
       <a href="records.html">Records</a>
       <a href="reports.html">Reports</a>
       <a href="about.html">About</a>
     </nav>
 
-    <!-- Right: Account controls -->
+    <!-- Right: Account Controls -->
     <div class="account-controls">
-      <div class="account-icon" id="account-icon" tabindex="0" aria-haspopup="true" aria-expanded="false">
-        <img src="images/user-icon.png" alt="Account" />
-      </div>
+
+      <!-- Button to open account menu -->
+      <button 
+        id="account-icon"
+        class="account-icon"
+        aria-haspopup="true"
+        aria-expanded="false"
+        aria-label="Open account menu"
+      >
+        <img src="images/user-icon.png" alt="User account menu" />
+      </button>
+
+      <!-- Account Menu -->
       <ul class="account-menu" id="account-menu" role="menu">
-        <li><a href="profile.html">Profile</a></li>
-        <li><a href="settings.html">Settings</a></li>
-        <li><a href="help.html">Help</a></li>
-        <li class="logout"><a href="index.html">Log Out</a></li>
+        <li role="menuitem"><a href="profile.html">Profile</a></li>
+        <li role="menuitem"><a href="settings.html">Settings</a></li>
+        <li role="menuitem"><a href="help.html">Help</a></li>
+        <li role="menuitem" class="logout">
+          <a href="#" class="auth-link" aria-label="Login or Logout">Login</a>
+        </li>
       </ul>
     </div>
+
   </div>
 </header>

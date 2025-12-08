@@ -1,30 +1,51 @@
 // scripts/home.js
-(() => {
-  const DATA_URL = "data/data.json"; // your local data file
-  const CURRENCY = "USD";
+(function () {
+  var dataUrl = "data/data.json";
+  var currencyCode = "USD";
 
-  const $ = (sel, root = document) => root.querySelector(sel);
+  function $(sel, root) {
+    return (root || document).querySelector(sel);
+  }
 
-  // ============== Formatting helpers ==============
-  const fmtMoney = (value, currency = CURRENCY) =>
-    new Intl.NumberFormat(undefined, { style: "currency", currency })
-      .format(Number.isFinite(+value) ? +value : 0);
+  /* ========= Formatting Helpers ========= */
+  function fmtMoney(value, currency) {
+    var num = parseFloat(value);
+    if (isNaN(num)) num = 0;
 
-  const fmtDate = (iso) =>
-    new Date(iso + (iso?.length === 10 ? "T00:00:00" : ""))
-      .toLocaleDateString(undefined, { year: "numeric", month: "short", day: "2-digit" });
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: currency || currencyCode
+    }).format(num);
+  }
 
-  // ============== Data load / merge ==============
-  async function loadJson() {
-    const res = await fetch(DATA_URL, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to load ${DATA_URL} (${res.status})`);
-    return await res.json();
+  function fmtDate(iso) {
+    if (!iso) return "";
+
+    if (iso.length === 10) {
+      iso = iso + "T00:00:00";
+    }
+
+    var d = new Date(iso);
+    return d.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "2-digit"
+    });
+  }
+
+  /* ========= Data Load ========= */
+  function loadJson() {
+    return fetch(dataUrl, { cache: "no-store" }).then(function (res) {
+      if (!res.ok) throw new Error("Failed to load " + dataUrl);
+      return res.json();
+    });
   }
 
   function getLocalTxns() {
     try {
-      return JSON.parse(localStorage.getItem("userTxns") || "[]");
-    } catch {
+      var raw = localStorage.getItem("userTxns");
+      return JSON.parse(raw || "[]");
+    } catch (e) {
       return [];
     }
   }
@@ -34,268 +55,423 @@
   }
 
   function normalize(data) {
-    const baseExpenses = Array.isArray(data.expenses) ? data.expenses : [];
-    const baseIncome   = Array.isArray(data.income) ? data.income : [];
+    var baseExpenses = Array.isArray(data.expenses) ? data.expenses : [];
+    var baseIncome = Array.isArray(data.income) ? data.income : [];
 
-    // Ensure both have standard fields
-    const local = getLocalTxns();
-    const extraExpenses = local.filter(t => (t.type || "expense") === "expense");
-    const extraIncome   = local.filter(t => t.type === "income");
+    var local = getLocalTxns();
+    var extraExpenses = [];
+    var extraIncome = [];
+
+    for (var i = 0; i < local.length; i++) {
+      var t = local[i];
+      if ((t.type || "expense") === "expense") extraExpenses.push(t);
+      else if (t.type === "income") extraIncome.push(t);
+    }
 
     return {
       users: Array.isArray(data.users) ? data.users : [],
-      expenses: [...baseExpenses, ...extraExpenses],
-      income:   [...baseIncome,   ...extraIncome]
+      expenses: baseExpenses.concat(extraExpenses),
+      income: baseIncome.concat(extraIncome)
     };
   }
 
-  // ============== Computations ==============
+  /* ========= Computations ========= */
   function computeOverview(expenses, income) {
-    const total_spending = expenses.reduce((sum, t) => sum + (+t.amount || 0), 0);
-    const total_income   = income.reduce((sum, i) => sum + (+i.amount || 0), 0);
-    const net_balance    = total_income - total_spending;
+    var totalSpending = 0;
+    var totalIncome = 0;
 
-    const categories = expenses.reduce((acc, t) => {
-      const key = t.category || "Uncategorized";
-      acc[key] = (acc[key] || 0) + (+t.amount || 0);
-      return acc;
-    }, {});
+    for (var i = 0; i < expenses.length; i++) {
+      totalSpending += parseFloat(expenses[i].amount) || 0;
+    }
+    for (var j = 0; j < income.length; j++) {
+      totalIncome += parseFloat(income[j].amount) || 0;
+    }
 
-    const dates = [...expenses.map(t => t.date), ...income.map(i => i.date)].filter(Boolean);
-    const latestISO = dates.length ? dates.sort().slice(-1)[0] : null;
-    const last_updated = latestISO
-      ? new Date(latestISO + (latestISO.length === 10 ? "T00:00:00" : "")).toISOString()
+    var netBalance = totalIncome - totalSpending;
+
+    var categories = {};
+    for (var k = 0; k < expenses.length; k++) {
+      var cat = expenses[k].category || "Uncategorized";
+      var amt = parseFloat(expenses[k].amount) || 0;
+      categories[cat] = (categories[cat] || 0) + amt;
+    }
+
+    var dates = [];
+    for (var m = 0; m < expenses.length; m++) {
+      if (expenses[m].date) dates.push(expenses[m].date);
+    }
+    for (var n = 0; n < income.length; n++) {
+      if (income[n].date) dates.push(income[n].date);
+    }
+
+    dates.sort();
+    var latestIso = dates.length ? dates[dates.length - 1] : null;
+
+    if (latestIso && latestIso.length === 10) {
+      latestIso = latestIso + "T00:00:00";
+    }
+
+    var lastUpdated = latestIso
+      ? new Date(latestIso).toISOString()
       : new Date().toISOString();
 
-    return { total_spending, total_income, net_balance, categories, last_updated, currency: CURRENCY };
+    return {
+      totalSpending: totalSpending,
+      totalIncome: totalIncome,
+      netBalance: netBalance,
+      categories: categories,
+      lastUpdated: lastUpdated,
+      currency: currencyCode
+    };
   }
 
-  // ============== Rendering ==============
+  /* ========= Rendering ========= */
   function renderKpis(comp) {
-    $("#kpiIncome").textContent   = fmtMoney(comp.total_income, comp.currency);
-    $("#kpiSpending").textContent = fmtMoney(comp.total_spending, comp.currency);
-    $("#kpiBalance").textContent  = fmtMoney(comp.net_balance, comp.currency);
-    $("#lastUpdated").textContent = `Data updated ${new Date(comp.last_updated).toLocaleString()}`;
+    $("#kpiIncome").textContent = fmtMoney(comp.totalIncome);
+    $("#kpiSpending").textContent = fmtMoney(comp.totalSpending);
+    $("#kpiBalance").textContent = fmtMoney(comp.netBalance);
+
+    $("#lastUpdated").textContent =
+      "Data updated " + new Date(comp.lastUpdated).toLocaleString();
   }
 
   function renderRecent(tbody, expenses) {
     if (!tbody) return;
     tbody.innerHTML = "";
 
-    expenses.slice()
-      .sort((a, b) => (a.date || "").localeCompare(b.date || ""))
+    var sorted = expenses
+      .slice()
+      .sort(function (a, b) {
+        return (a.date || "").localeCompare(b.date || "");
+      })
       .slice(-8)
-      .reverse()
-      .forEach(txn => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${fmtDate(txn.date)}</td>
-          <td>${txn.source || ""}</td>
-          <td>${txn.category || ""}</td>
-          <td class="num">${fmtMoney(txn.amount)}</td>
-          <td>${txn.payment_method || txn.method || ""}</td>
-          <td>${txn.notes || ""}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+      .reverse();
+
+    for (var i = 0; i < sorted.length; i++) {
+      var t = sorted[i];
+      var tr = document.createElement("tr");
+
+      tr.innerHTML =
+        "<td>" +
+        fmtDate(t.date) +
+        "</td><td>" +
+        (t.source || "") +
+        "</td><td>" +
+        (t.category || "") +
+        "</td><td class=\"num\">" +
+        fmtMoney(t.amount) +
+        "</td><td>" +
+        (t.paymentMethod || t.method || "") +
+        "</td><td>" +
+        (t.notes || "") +
+        "</td>";
+
+      tbody.appendChild(tr);
+    }
 
     if (!tbody.children.length) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="6" class="subtle">No expenses yet.</td>`;
-      tbody.appendChild(tr);
+      var trEmpty = document.createElement("tr");
+      trEmpty.innerHTML =
+        '<td colspan="6" class="subtle">No expenses yet.</td>';
+      tbody.appendChild(trEmpty);
     }
   }
 
   function renderLegend(container, categories) {
     if (!container) return;
+
     container.innerHTML = "";
-    const palette = ["#0057b8", "#00a3e0", "#1e3a8a", "#0ea5e9", "#2563eb", "#0891b2", "#3b82f6"];
-    Object.keys(categories || {}).forEach((name, i) => {
-      const chip = document.createElement("span");
+    var palette = ["#0057b8", "#00a3e0", "#1e3a8a", "#0ea5e9", "#2563eb", "#0891b2", "#3b82f6"];
+
+    var keys = Object.keys(categories);
+    for (var i = 0; i < keys.length; i++) {
+      var name = keys[i];
+
+      var chip = document.createElement("span");
       chip.className = "chip";
       chip.style.color = palette[i % palette.length];
-      chip.innerHTML = `<span class="dot" aria-hidden="true"></span>${name}`;
+      chip.innerHTML = '<span class="dot" aria-hidden="true"></span>' + name;
+
       container.appendChild(chip);
-    });
+    }
   }
 
   function renderBreakdown(listEl, categories) {
     if (!listEl) return;
+
     listEl.innerHTML = "";
-    const total = Object.values(categories || {}).reduce((a, b) => a + b, 0);
-    Object.entries(categories || {})
-      .sort((a, b) => b[1] - a[1])
-      .forEach(([name, amt]) => {
-        const pct = total ? Math.round((amt / total) * 100) : 0;
-        const li = document.createElement("li");
-        li.innerHTML = `<span>${name}</span><span>${fmtMoney(amt)} (${pct}%)</span>`;
-        listEl.appendChild(li);
+    var keys = Object.keys(categories);
+
+    var total = 0;
+    for (var i = 0; i < keys.length; i++) {
+      total += categories[keys[i]];
+    }
+
+    var entries = keys
+      .map(function (k) {
+        return [k, categories[k]];
+      })
+      .sort(function (a, b) {
+        return b[1] - a[1];
       });
+
+    for (var j = 0; j < entries.length; j++) {
+      var name = entries[j][0];
+      var amt = entries[j][1];
+      var pct = total ? Math.round((amt / total) * 100) : 0;
+
+      var li = document.createElement("li");
+      li.innerHTML =
+        "<span>" +
+        name +
+        "</span><span>" +
+        fmtMoney(amt) +
+        " (" +
+        pct +
+        "%)</span>";
+
+      listEl.appendChild(li);
+    }
   }
 
-  // Simple canvas bar chart (no libraries)
+  /* ========= Canvas Bar Chart ========= */
   function drawBarChart(canvas, dataObj) {
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const entries = Object.entries(dataObj || {});
-    const labels = entries.map(e => e[0]);
-    const values = entries.map(e => +e[1] || 0);
-    const max = Math.max(1, ...values);
+
+    var ctx = canvas.getContext("2d");
+    var keys = Object.keys(dataObj || {});
+    var values = [];
+
+    for (var i = 0; i < keys.length; i++) {
+      values.push(parseFloat(dataObj[keys[i]]) || 0);
+    }
+
+    var max = 1;
+    for (var j = 0; j < values.length; j++) {
+      if (values[j] > max) max = values[j];
+    }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const P = { t: 20, r: 20, b: 50, l: 40 };
-    const innerW = canvas.width - P.l - P.r;
-    const innerH = canvas.height - P.t - P.b;
+    var P = { t: 20, r: 20, b: 50, l: 40 };
+    var innerWidth = canvas.width - P.l - P.r;
+    var innerHeight = canvas.height - P.t - P.b;
 
-    // axes
     ctx.lineWidth = 1;
     ctx.strokeStyle = "#e5e7eb";
     ctx.beginPath();
     ctx.moveTo(P.l, P.t);
-    ctx.lineTo(P.l, P.t + innerH);
-    ctx.lineTo(P.l + innerW, P.t + innerH);
+    ctx.lineTo(P.l, P.t + innerHeight);
+    ctx.lineTo(P.l + innerWidth, P.t + innerHeight);
     ctx.stroke();
 
-    const gap = 14;
-    const barW = Math.max(10, (innerW - gap * (values.length + 1)) / Math.max(values.length, 1));
-    const palette = ["#0057b8", "#00a3e0", "#1e3a8a", "#0ea5e9", "#2563eb", "#0891b2", "#3b82f6"];
+    var gap = 14;
+    var barWidth = Math.max(
+      10,
+      (innerWidth - gap * (keys.length + 1)) / (keys.length || 1)
+    );
 
-    values.forEach((v, i) => {
-      const h = (v / max) * (innerH - 10);
-      const x = P.l + gap + i * (barW + gap);
-      const y = P.t + innerH - h;
-      ctx.fillStyle = palette[i % palette.length];
-      ctx.fillRect(x, y, barW, h);
+    var palette = ["#0057b8", "#00a3e0", "#1e3a8a", "#0ea5e9", "#2563eb", "#0891b2", "#3b82f6"];
+
+    for (var k = 0; k < keys.length; k++) {
+      var v = values[k];
+      var h = (v / max) * (innerHeight - 10);
+      var x = P.l + gap + k * (barWidth + gap);
+      var y = P.t + innerHeight - h;
+
+      ctx.fillStyle = palette[k % palette.length];
+      ctx.fillRect(x, y, barWidth, h);
 
       ctx.fillStyle = "#111827";
-      ctx.font = "12px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+      ctx.font = "12px system-ui";
       ctx.textAlign = "center";
-      ctx.fillText(String(v.toFixed(2)), x + barW / 2, y - 6);
+      ctx.fillText(String(v.toFixed(2)), x + barWidth / 2, y - 6);
 
       ctx.fillStyle = "#6b7280";
       ctx.save();
-      ctx.translate(x + barW / 2, P.t + innerH + 16);
+      ctx.translate(x + barWidth / 2, P.t + innerHeight + 16);
       ctx.rotate(-Math.PI / 10);
-      ctx.fillText(labels[i], 0, 0);
+      ctx.fillText(keys[k], 0, 0);
       ctx.restore();
-    });
+    }
   }
 
-  // ============== Actions / UI wiring ==============
+  /* ========= UI Actions ========= */
   function personalizeWelcome(users) {
-    // If you set sessionStorage on login (e.g., name/email), prefer that:
-    const storedName = sessionStorage.getItem("currentUserName");
+    var storedName = sessionStorage.getItem("currentUserName");
+    var el = $("#welcomeTitle");
+
     if (storedName) {
-      $("#welcomeTitle").textContent = `Welcome back, ${storedName}`;
+      el.textContent = "Welcome back, " + storedName;
       return;
     }
-    // else fall back to first user in JSON or generic
-    const name = users?.[0]?.name;
-    $("#welcomeTitle").textContent = name ? `Welcome back, ${name}` : "Welcome back";
+
+    if (users && users.length && users[0].name) {
+      el.textContent = "Welcome back, " + users[0].name;
+    } else {
+      el.textContent = "Welcome back";
+    }
   }
 
   function openModal() {
-    $("#addTxnModal")?.classList.remove("hidden");
+    var modal = $("#addTxnModal");
+    if (modal) modal.classList.remove("hidden");
   }
 
   function closeModal() {
-    $("#addTxnModal")?.classList.add("hidden");
+    var modal = $("#addTxnModal");
+    if (modal) modal.classList.add("hidden");
   }
 
-  function wireInteractions(onRefresh, allDataRef) {
-    $("#btnUpload")?.addEventListener("click", () => (window.location.href = "./upload.html"));
-    $("#btnReports")?.addEventListener("click", () => (window.location.href = "./reports.html"));
-    $("#btnAddTxn")?.addEventListener("click", openModal);
-    $("#btnCancelModal")?.addEventListener("click", closeModal);
+  function wireInteractions(refresh, allDataRef) {
+    var btnUpload = $("#btnUpload");
+    if (btnUpload) {
+      btnUpload.addEventListener("click", function () {
+        window.location.href = "./upload.html";
+      });
+    }
 
-    // Save new transaction to localStorage
-    $("#txnForm")?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const newTxn = {
-        type: "expense", // defaulting to expense; add a selector if you want income
-        date: $("#txnDate")?.value,
-        source: $("#txnSource")?.value?.trim(),
-        category: $("#txnCategory")?.value?.trim(),
-        amount: parseFloat($("#txnAmount")?.value),
-        payment_method: $("#txnMethod")?.value?.trim(),
-        notes: $("#txnNotes")?.value?.trim()
-      };
+    var btnReports = $("#btnReports");
+    if (btnReports) {
+      btnReports.addEventListener("click", function () {
+        window.location.href = "./reports.html";
+      });
+    }
 
-      if (!newTxn.date || !newTxn.source || !newTxn.category || !Number.isFinite(newTxn.amount)) {
-        alert("Please fill in Date, Amount, Source, and Category.");
-        return;
-      }
+    var btnAddTxn = $("#btnAddTxn");
+    if (btnAddTxn) btnAddTxn.addEventListener("click", openModal);
 
-      const list = getLocalTxns();
-      list.push(newTxn);
-      setLocalTxns(list);
+    var btnCancel = $("#btnCancelModal");
+    if (btnCancel) btnCancel.addEventListener("click", closeModal);
 
-      closeModal();
-      $("#txnForm").reset();
-      onRefresh(); // re-render with new data
-      alert("Transaction added!");
-    });
+    var form = $("#txnForm");
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
 
-    // Export CSV (expenses + income + local additions)
-    $("#btnExport")?.addEventListener("click", () => {
-      const { expenses, income } = allDataRef.current || { expenses: [], income: [] };
-      const rows = [
-        ["type", "id", "date", "source", "category", "amount", "payment_method", "notes"]
-      ];
+        var newTxn = {
+          type: "expense",
+          date: $("#txnDate") ? $("#txnDate").value : "",
+          source: $("#txnSource") ? $("#txnSource").value.trim() : "",
+          category: $("#txnCategory") ? $("#txnCategory").value.trim() : "",
+          amount: parseFloat($("#txnAmount") ? $("#txnAmount").value : ""),
+          paymentMethod: $("#txnMethod") ? $("#txnMethod").value.trim() : "",
+          notes: $("#txnNotes") ? $("#txnNotes").value.trim() : ""
+        };
 
-      expenses.forEach(e =>
-        rows.push(["expense", e.id || "", e.date || "", e.source || "", e.category || "", e.amount || 0, e.payment_method || e.method || "", e.notes || ""])
-      );
-      income.forEach(i =>
-        rows.push(["income", i.id || "", i.date || "", i.source || "", i.category || "", i.amount || 0, i.payment_method || i.method || "", i.notes || ""])
-      );
+        if (
+          !newTxn.date ||
+          !newTxn.source ||
+          !newTxn.category ||
+          !isFinite(newTxn.amount)
+        ) {
+          alert("Please fill in Date, Amount, Source, and Category.");
+          return;
+        }
 
-      const csv = rows.map(r => r.map(cell => {
-        const s = String(cell ?? "");
-        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-      }).join(",")).join("\n");
+        var list = getLocalTxns();
+        list.push(newTxn);
+        setLocalTxns(list);
 
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `finance_export_${new Date().toISOString().slice(0,10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    });
+        closeModal();
+        form.reset();
+        refresh();
+        alert("Transaction added!");
+      });
+    }
+
+    var btnExport = $("#btnExport");
+    if (btnExport) {
+      btnExport.addEventListener("click", function () {
+        var current = allDataRef.current || { expenses: [], income: [] };
+        var expenses = current.expenses;
+        var income = current.income;
+
+        var rows = [
+          ["type", "id", "date", "source", "category", "amount", "paymentMethod", "notes"]
+        ];
+
+        function pushRows(arr, type) {
+          for (var i = 0; i < arr.length; i++) {
+            var t = arr[i];
+            rows.push([
+              type,
+              t.id || "",
+              t.date || "",
+              t.source || "",
+              t.category || "",
+              t.amount || 0,
+              t.paymentMethod || t.method || "",
+              t.notes || ""
+            ]);
+          }
+        }
+
+        pushRows(expenses, "expense");
+        pushRows(income, "income");
+
+        var csv = "";
+        for (var r = 0; r < rows.length; r++) {
+          var line = "";
+          for (var c = 0; c < rows[r].length; c++) {
+            var cell = String(rows[r][c]);
+            if (/[",\n]/.test(cell)) {
+              cell = '"' + cell.replace(/"/g, '""') + '"';
+            }
+            line += (c > 0 ? "," : "") + cell;
+          }
+          csv += line + "\n";
+        }
+
+        var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download =
+          "finance_export_" + new Date().toISOString().slice(0, 10) + ".csv";
+
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+    }
   }
 
-  // ============== Render cycle ==============
-  async function init() {
-    const allDataRef = { current: null };
+  /* ========= Render Cycle ========= */
+  function init() {
+    var allDataRef = { current: null };
 
-    async function refresh() {
-      try {
-        const raw = await loadJson();
-        const merged = normalize(raw);
-        allDataRef.current = { expenses: merged.expenses, income: merged.income };
+    function refresh() {
+      return loadJson()
+        .then(function (raw) {
+          var merged = normalize(raw);
 
-        personalizeWelcome(merged.users);
+          allDataRef.current = {
+            expenses: merged.expenses,
+            income: merged.income
+          };
 
-        const comp = computeOverview(merged.expenses, merged.income);
-        renderKpis(comp);
-        renderRecent($("#txnTbody"), merged.expenses);
-        drawBarChart($("#categoriesChart"), comp.categories);
-        renderLegend($("#chartLegend"), comp.categories);
-        renderBreakdown($("#categoryList"), comp.categories);
-      } catch (err) {
-        console.error(err);
-        $("#lastUpdated").textContent = "Could not load data.";
-        $("#txnTbody").innerHTML = `<tr><td colspan="6" class="subtle">Failed to load expenses.</td></tr>`;
-      }
+          personalizeWelcome(merged.users);
+
+          var comp = computeOverview(merged.expenses, merged.income);
+          renderKpis(comp);
+          renderRecent($("#txnTbody"), merged.expenses);
+          drawBarChart($("#categoriesChart"), comp.categories);
+          renderLegend($("#chartLegend"), comp.categories);
+          renderBreakdown($("#categoryList"), comp.categories);
+        })
+        .catch(function () {
+          $("#lastUpdated").textContent = "Could not load data.";
+          $("#txnTbody").innerHTML =
+            '<tr><td colspan="6" class="subtle">Failed to load expenses.</td></tr>';
+        });
     }
 
     wireInteractions(refresh, allDataRef);
-    await refresh();
+    refresh();
   }
 
-  document.addEventListener("DOMContentLoaded", init);
+  // Start immediately
+  init();
 })();
