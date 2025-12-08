@@ -2,82 +2,151 @@
 //
 // Smart API base that auto-switches between local dev and production (Render).
 // - Local (served via Live Server/HTTP): http://localhost:4000/api
-// - Production (GitHub Pages):          https://financeappmy.onrender.com/api
+// - Production (GitHub Pages):           https://financeappmy.onrender.com/api
 // - Manual override: add ?api=https://custom-host.com to your page URL
 
-// 1) Optional manual override via query string (?api=...)
-const urlApiOverride = new URLSearchParams(window.location.search).get("api");
+// -------------------------------
+// 1) Optional manual override
+// -------------------------------
+const params = new URLSearchParams(window.location.search);
+const urlApiOverride = params.get("api");
 
-// 2) Known hosts/origins for local dev
-const isLocalHost = /^(localhost|127\.0\.0\.1)$/i.test(location.hostname);
+// -------------------------------
+// 2) Detect localhost
+// -------------------------------
+const isLocalHost = (
+  location.hostname === "localhost" ||
+  location.hostname === "127.0.0.1"
+);
 
+// -------------------------------
 // 3) Defaults
+// -------------------------------
 const PROD_API = "https://financeappmy.onrender.com/api";
 const LOCAL_API = "http://localhost:4000/api";
 
-// 4) Pick base
-export const API_BASE = (urlApiOverride && urlApiOverride.replace(/\/$/, "")) ||
-                        (isLocalHost ? LOCAL_API : PROD_API);
+// -------------------------------
+// 4) Determine API base
+// -------------------------------
+export const API_BASE =
+  (urlApiOverride ? urlApiOverride.replace(/\/$/, "") : null) ||
+  (isLocalHost ? LOCAL_API : PROD_API);
 
-// If you ever need the root origin (without /api)
+// Also export root origin (no /api)
 export const API_ORIGIN = API_BASE.replace(/\/api$/, "");
 
-// ---- shared fetch helper (cookies on) ----
-async function fetchJson(path, { method = "GET", headers = {}, body, formData } = {}) {
+
+// ===========================================
+// Shared Fetch Helper (with cookies enabled)
+// ===========================================
+async function fetchJson(path, options) {
   const opts = {
-    method,
+    method: (options && options.method) || "GET",
     credentials: "include",
-    headers,
+    headers: (options && options.headers) || {}
   };
 
-  if (formData) {
-    // sending FormData (e.g., uploads)
-    opts.body = formData;
-  } else if (body !== undefined) {
-    opts.headers = { "Content-Type": "application/json", ...headers };
-    opts.body = JSON.stringify(body);
+  if (options && options.formData) {
+    // Sending FormData
+    opts.body = options.formData;
+  } else if (options && options.body !== undefined) {
+    opts.headers = Object.assign({ "Content-Type": "application/json" }, opts.headers);
+    opts.body = JSON.stringify(options.body);
   }
 
-  const res = await fetch(`${API_BASE}${path}`, opts);
-  const text = await res.text();
+  const response = await fetch(API_BASE + path, opts);
+
+  // Read raw text so we can attempt JSON parsing safely
+  const raw = await response.text();
   let json;
-  try { json = text ? JSON.parse(text) : {}; } catch { json = { raw: text }; }
-
-  if (!res.ok) {
-    const msg = json?.error || `HTTP ${res.status}`;
-    const err = new Error(msg);
-    err.status = res.status;
-    throw err;
+  try {
+    json = raw ? JSON.parse(raw) : {};
+  } catch (err) {
+    json = { raw: raw };
   }
+
+  // Error handling
+  if (!response.ok) {
+    const message = (json && json.error) ? json.error : "HTTP " + response.status;
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
+  }
+
   return json;
 }
 
-// ---- public API used by your pages ----
+
+// ===========================================
+// Public API used by your pages
+// ===========================================
 export const api = {
-  // auth
-  register: ({ name, email, password }) =>
-    fetchJson("/auth/register", { method: "POST", body: { name, email, password } }),
 
-  login: ({ email, password }) =>
-    fetchJson("/auth/login", { method: "POST", body: { email, password } }),
+  // -------------------------
+  // AUTH
+  // -------------------------
+  register: function (payload) {
+    return fetchJson("/auth/register", {
+      method: "POST",
+      body: payload
+    });
+  },
 
-  me: () => fetchJson("/auth/me"),
+  login: function (payload) {
+    return fetchJson("/auth/login", {
+      method: "POST",
+      body: payload
+    });
+  },
 
-  logout: () => fetchJson("/auth/logout", { method: "POST" }),
+  me: function () {
+    return fetchJson("/auth/me");
+  },
 
-  // records
-  listRecords: () => fetchJson("/records"),
-  createRecord: (payload) => fetchJson("/records", { method: "POST", body: payload }),
+  logout: function () {
+    return fetchJson("/auth/logout", { method: "POST" });
+  },
 
-  // receipts
-  listReceipts: () => fetchJson("/receipts"),
-  getReceipt: (id) => fetchJson(`/receipts/${encodeURIComponent(id)}`),
-  deleteReceipt: (id) => fetchJson(`/receipts/${encodeURIComponent(id)}`, { method: "DELETE" }),
 
-  // uploads via /api/receipts (multipart)
-  uploadReceipt: async (file) => {
+  // -------------------------
+  // RECORDS
+  // -------------------------
+  listRecords: function () {
+    return fetchJson("/records");
+  },
+
+  createRecord: function (payload) {
+    return fetchJson("/records", {
+      method: "POST",
+      body: payload
+    });
+  },
+
+
+  // -------------------------
+  // RECEIPTS
+  // -------------------------
+  listReceipts: function () {
+    return fetchJson("/receipts");
+  },
+
+  getReceipt: function (id) {
+    return fetchJson("/receipts/" + encodeURIComponent(id));
+  },
+
+  deleteReceipt: function (id) {
+    return fetchJson("/receipts/" + encodeURIComponent(id), {
+      method: "DELETE"
+    });
+  },
+
+  uploadReceipt: function (file) {
     const fd = new FormData();
     fd.append("receipt", file, file.name);
-    return fetchJson("/receipts", { method: "POST", formData: fd });
-  },
+
+    return fetchJson("/receipts", {
+      method: "POST",
+      formData: fd
+    });
+  }
 };

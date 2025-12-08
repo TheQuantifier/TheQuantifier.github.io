@@ -16,13 +16,13 @@
 </head>
 <body class="landing-light">
   <!-- Header -->
-  <header class="nf-header" role="banner">
+  <header class="nf-header">
     <div class="nf-header-inner">
       <div class="nf-brand-center">
         <span class="nf-logo">Finance App</span>
       </div>
       <nav class="nf-auth-right" aria-label="Authentication">
-        <a href="index.html" class="nf-login">Login</a>
+        <a href="index.html" class="nflogin">Login</a>
       </nav>
     </div>
   </header>
@@ -38,11 +38,13 @@
 
         <!-- Create account box -->
         <form id="registerForm" class="auth-form" novalidate>
+
           <label for="name">Full Name</label>
           <input
             type="text"
             id="name"
             name="name"
+            class="nfinput"
             placeholder="Your Name"
             autocomplete="name"
             required
@@ -53,6 +55,7 @@
             type="email"
             id="email"
             name="email"
+            class="nfinput"
             placeholder="you@example.com"
             autocomplete="email"
             required
@@ -63,17 +66,23 @@
             type="password"
             id="password"
             name="password"
+            class="nfinput"
             placeholder="Create a strong password"
             autocomplete="new-password"
             minlength="6"
             required
           />
-          <button type="submit" id="registerBtn">Create Account</button>
+
+          <button type="submit" id="registerBtn" class="nfbtn">Create Account</button>
+
           <p id="registerMessage" class="form-message" aria-live="polite"></p>
+
         </form>
+
         <div class="auth-links">
           <p>Already have an account? <a href="index.html">Login</a></p>
         </div>
+
       </div>
     </section>
 
@@ -81,33 +90,41 @@
     <section class="nf-about">
       <div class="nf-about-inner">
         <h2>What is Finance App?</h2>
+
         <p>
-          Finance App is your digital assistant for managing expenses and receipts with ease. Whether you’re a freelancer, small business owner, or
-          simply looking to better understand your spending habits, our platform simplifies financial organization from start to finish.
+          Finance App is your digital assistant for managing expenses and receipts with ease.
+          Whether you’re a freelancer, small business owner, or simply looking to better understand
+          your spending habits, our platform simplifies financial organization from start to finish.
         </p>
 
-        <div class="nf-about-grid">
+        <!-- Updated class name -->
+        <div class="nf-aboutgrid">
+
           <div class="nf-about-card">
             <h3>📸 Smart Scanning</h3>
             <p>Upload photos or PDFs and let our intelligent OCR automatically extract and categorize receipt data.</p>
           </div>
+
           <div class="nf-about-card">
             <h3>📊 Instant Insights</h3>
             <p>Get a clear view of your spending trends with interactive graphs and exportable summaries for tax season.</p>
           </div>
+
           <div class="nf-about-card">
             <h3>💾 Easy Exports</h3>
             <p>Download your reports to Excel, QuickBooks, or CSV in one click — ready for accountants or personal review.</p>
           </div>
+
         </div>
       </div>
     </section>
   </main>
 
   <!-- Footer -->
-  <footer class="nf-footer" role="contentinfo">
+  <footer class="nf-footer">
     <div class="nf-footer-inner">
       <p>&copy; <span id="year"></span> Finance App. All rights reserved.</p>
+
       <nav class="nf-legal" aria-label="Footer">
         <a href="privacy.html">Privacy</a><span class="sep">•</span>
         <a href="terms.html">Terms</a><span class="sep">•</span>
@@ -116,7 +133,7 @@
     </div>
   </footer>
 
-  <!-- Scripts (no modules, no API) -->
+  <!-- Scripts -->
   <script defer src="./scripts/default.js"></script>
   <script defer src="./scripts/register.js"></script>
 </body>

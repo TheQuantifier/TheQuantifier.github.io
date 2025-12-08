@@ -7,8 +7,8 @@
 import { api, API_BASE } from "./api.js";
 
 (function () {
-  // All calls go through API_BASE (ends with /api)
-  const UPLOAD_URL = `${API_BASE}/receipts`;
+
+  const UPLOAD_URL = API_BASE + "/receipts";
 
   const ACCEPTED = ["application/pdf", "image/png", "image/jpeg"];
   const MAX_MB = 50;
@@ -23,7 +23,7 @@ import { api, API_BASE } from "./api.js";
   const recentTableBody = document.getElementById("recentTableBody");
 
   if (!dropzone || !fileInput) {
-    console.error("upload.js: Missing #dropzone or #fileInput in the DOM.");
+    console.error("upload.js: Missing #dropzone or #fileInput.");
     return;
   }
 
@@ -31,104 +31,150 @@ import { api, API_BASE } from "./api.js";
   let pickerArmed = false;
 
   // ---------- Helpers ----------
-  const setStatus = (msg, isError = false) => {
+  function setStatus(msg, isError) {
     if (!statusMsg) return;
     statusMsg.textContent = msg;
-    statusMsg.classList.toggle("error", !!isError);
-  };
+    if (isError) statusMsg.classList.add("error");
+    else statusMsg.classList.remove("error");
+  }
 
-  const bytesToSize = (bytes) => {
+  function bytesToSize(bytes) {
     const units = ["B", "KB", "MB", "GB"];
-    let i = 0, n = bytes || 0;
-    while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
+    let i = 0;
+    let n = bytes || 0;
+    while (n >= 1024 && i < units.length - 1) {
+      n /= 1024;
+      i++;
+    }
     const fixed = n >= 10 || i === 0 ? 0 : 1;
-    return `${n.toFixed(fixed)} ${units[i]}`;
-  };
+    return n.toFixed(fixed) + " " + units[i];
+  }
 
-  const extFromName = (name) => (name.includes(".") ? name.split(".").pop().toUpperCase() : "");
-  const isAccepted = (file) => {
-    if (ACCEPTED.includes(file.type)) return true;
+  function extFromName(name) {
+    return name.indexOf(".") !== -1 ? name.split(".").pop().toUpperCase() : "";
+  }
+
+  function isAccepted(file) {
+    if (ACCEPTED.indexOf(file.type) !== -1) return true;
     const ext = extFromName(file.name).toLowerCase();
-    return ["pdf", "png", "jpg", "jpeg"].includes(ext);
-  };
-  const overLimit = (file) => file.size > MAX_MB * 1024 * 1024;
+    return ["pdf", "png", "jpg", "jpeg"].indexOf(ext) !== -1;
+  }
 
-  async function fetchJSON(url, opts = {}) {
-    const res = await fetch(url, { credentials: "include", ...opts });
-    const text = await res.text();
+  function overLimit(file) {
+    return file.size > MAX_MB * 1024 * 1024;
+  }
+
+  async function fetchJSON(url, opts) {
+    const options = opts || {};
+    const fetchOpts = {
+      method: options.method || "GET",
+      credentials: "include",
+      headers: options.headers || {}
+    };
+
+    if (options.formData) {
+      fetchOpts.body = options.formData;
+    } else if (options.body !== undefined) {
+      fetchOpts.headers = Object.assign(
+        { "Content-Type": "application/json" },
+        fetchOpts.headers
+      );
+      fetchOpts.body = JSON.stringify(options.body);
+    }
+
+    const res = await fetch(url, fetchOpts);
+    const raw = await res.text();
     let json;
-    try { json = text ? JSON.parse(text) : {}; } catch { json = { raw: text }; }
+
+    try {
+      json = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      json = { raw: raw };
+    }
+
     if (!res.ok) {
-      const msg = json?.error || `HTTP ${res.status}`;
-      const err = new Error(msg);
+      const message = json && json.error ? json.error : "HTTP " + res.status;
+      const err = new Error(message);
       err.status = res.status;
       throw err;
     }
+
     return json;
   }
 
   // ---------- Recent uploads ----------
-  const trashSVG = `<img src="images/trash.jpg" alt="Delete" class="icon-trash" />`;
+  const trashSVG = '<img src="images/trash.jpg" alt="Delete" class="icon-trash" />';
 
   function renderRecentRows(rows) {
     recentTableBody.innerHTML = "";
     if (!rows.length) {
-      recentTableBody.innerHTML = `<tr><td colspan="6" class="subtle">No uploads yet.</td></tr>`;
+      recentTableBody.innerHTML =
+        '<tr><td colspan="6" class="subtle">No uploads yet.</td></tr>';
       return;
     }
-    for (const r of rows) {
-      const tr = document.createElement("tr");
-      tr.dataset.id = r._id;
-      const when = r.uploaded_at ? new Date(r.uploaded_at).toLocaleString() : "—";
-      tr.innerHTML = `
-        <td>${r.original_filename || r.stored_filename || "—"}</td>
-        <td>${r.mimetype || "—"}</td>
-        <td class="num">${(r.size_bytes && bytesToSize(r.size_bytes)) || "—"}</td>
-        <td>${when}</td>
-        <td>${r.parse_status || "raw"}</td>
-        <td class="num">
-          <button class="icon-btn js-delete" data-id="${r._id}" title="Delete" aria-label="Delete this receipt">
-            ${trashSVG}
-          </button>
-        </td>
-      `;
+
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var tr = document.createElement("tr");
+      tr.setAttribute("data-id", r._id);
+
+      var when = r.uploaded_at
+        ? new Date(r.uploaded_at).toLocaleString()
+        : "—";
+
+      tr.innerHTML =
+        '<td>' + (r.original_filename || r.stored_filename || "—") + "</td>" +
+        "<td>" + (r.mimetype || "—") + "</td>" +
+        '<td class="num">' + (r.size_bytes ? bytesToSize(r.size_bytes) : "—") + "</td>" +
+        "<td>" + when + "</td>" +
+        "<td>" + (r.parse_status || "raw") + "</td>" +
+        '<td class="num">' +
+        '<button class="icon-btn js-delete" data-id="' + r._id + '" title="Delete" aria-label="Delete this receipt">' +
+        trashSVG +
+        "</button></td>";
+
       recentTableBody.appendChild(tr);
     }
   }
 
   async function refreshRecent() {
     try {
-      const rows = await api.listReceipts(); // GET /api/receipts
+      var rows = await api.listReceipts();
       renderRecentRows(rows || []);
     } catch (err) {
-      if ((err.message || "").toLowerCase().includes("not")) {
-        const url = new URL("./login.html", location.href);
+      var msg = (err.message || "").toLowerCase();
+      if (msg.indexOf("not") !== -1) {
+        var url = new URL("./login.html", location.href);
         url.searchParams.set("redirect", "upload.html");
         location.href = url.toString();
         return;
       }
-      recentTableBody.innerHTML = `<tr><td colspan="6" class="subtle">Failed to load uploads.</td></tr>`;
+      recentTableBody.innerHTML =
+        '<tr><td colspan="6" class="subtle">Failed to load uploads.</td></tr>';
     }
   }
 
-  // ---------- Delete buttons ----------
-  recentTableBody?.addEventListener("click", async (e) => {
-    const btn = e.target.closest(".js-delete");
+  // ---------- Delete ----------
+  recentTableBody.addEventListener("click", async function (e) {
+    var btn = e.target.closest && e.target.closest(".js-delete");
     if (!btn) return;
-    const id = btn.getAttribute("data-id");
-    if (!id) return;
-    const row = btn.closest("tr");
 
-    if (!confirm("Delete this receipt? This removes the DB record and attempts to delete the file on disk.")) return;
+    var id = btn.getAttribute("data-id");
+    if (!id) return;
+
+    var row = btn.closest("tr");
+
+    if (!window.confirm("Delete this receipt?")) return;
 
     btn.disabled = true;
+
     try {
-      await api.deleteReceipt(id); // DELETE /api/receipts/:id
+      await api.deleteReceipt(id);
       if (row && row.parentNode) row.parentNode.removeChild(row);
-      if (!recentTableBody.querySelector("tr")) await refreshRecent();
+      refreshRecent();
       setStatus("Deleted.");
     } catch (err) {
-      setStatus(`Delete failed: ${err.message}`, true);
+      setStatus("Delete failed: " + err.message, true);
       btn.disabled = false;
     }
   });
@@ -136,142 +182,223 @@ import { api, API_BASE } from "./api.js";
   // ---------- Queue ----------
   function renderQueue() {
     fileList.innerHTML = "";
-    const hasItems = queue.length > 0;
-    uploadBtn.disabled = !hasItems;
-    if (!hasItems) return;
+    uploadBtn.disabled = queue.length === 0;
 
-    queue.forEach((file, idx) => {
-      const item = document.createElement("div");
-      item.className = "file-item";
+    for (var i = 0; i < queue.length; i++) {
+      (function (file, idx) {
+        var item = document.createElement("div");
+        item.className = "file-item";
 
-      const thumb = document.createElement("div");
-      thumb.className = "file-thumb";
+        var thumb = document.createElement("div");
+        thumb.className = "file-thumb";
 
-      if ((file.type || "").startsWith("image/")) {
-        const img = document.createElement("img");
-        img.alt = "";
-        img.style.width = "100%";
-        img.style.height = "100%";
-        img.style.objectFit = "cover";
-        const reader = new FileReader();
-        reader.onload = (e) => (img.src = e.target.result);
-        reader.readAsDataURL(file);
-        thumb.appendChild(img);
-      } else {
-        thumb.textContent = extFromName(file.name) || "FILE";
-      }
+        if (String(file.type).indexOf("image/") === 0) {
+          var img = document.createElement("img");
+          img.alt = "";
+          img.style.width = "100%";
+          img.style.height = "100%";
+          img.style.objectFit = "cover";
 
-      const meta = document.createElement("div");
-      meta.className = "file-meta";
-      const name = document.createElement("div");
-      name.className = "file-name";
-      name.textContent = file.name;
-      const sub = document.createElement("div");
-      sub.className = "file-subtle";
-      sub.textContent = `${file.type || "Unknown"} • ${bytesToSize(file.size)}`;
-      meta.appendChild(name);
-      meta.appendChild(sub);
+          var reader = new FileReader();
+          reader.onload = function (ev) {
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(file);
+          thumb.appendChild(img);
+        } else {
+          thumb.textContent = extFromName(file.name) || "FILE";
+        }
 
-      const actions = document.createElement("div");
-      actions.className = "file-actions";
-      const removeBtn = document.createElement("button");
-      removeBtn.className = "file-remove";
-      removeBtn.type = "button";
-      removeBtn.setAttribute("aria-label", `Remove ${file.name}`);
-      removeBtn.textContent = "✕";
-      removeBtn.addEventListener("click", () => {
-        queue.splice(idx, 1);
-        renderQueue();
-      });
-      actions.appendChild(removeBtn);
+        var meta = document.createElement("div");
+        meta.className = "file-meta";
 
-      item.appendChild(thumb);
-      item.appendChild(meta);
-      item.appendChild(actions);
-      fileList.appendChild(item);
-    });
+        var name = document.createElement("div");
+        name.className = "file-name";
+        name.textContent = file.name;
+
+        var sub = document.createElement("div");
+        sub.className = "file-subtle";
+        sub.textContent = (file.type || "Unknown") + " • " + bytesToSize(file.size);
+
+        meta.appendChild(name);
+        meta.appendChild(sub);
+
+        var actions = document.createElement("div");
+        actions.className = "file-actions";
+
+        var removeBtn = document.createElement("button");
+        removeBtn.className = "file-remove";
+        removeBtn.type = "button";
+        removeBtn.setAttribute("aria-label", "Remove " + file.name);
+        removeBtn.textContent = "✕";
+
+        removeBtn.addEventListener("click", function () {
+          queue.splice(idx, 1);
+          renderQueue();
+        });
+
+        actions.appendChild(removeBtn);
+
+        item.appendChild(thumb);
+        item.appendChild(meta);
+        item.appendChild(actions);
+        fileList.appendChild(item);
+      })(queue[i], i);
+    }
   }
 
   function addFiles(files) {
-    const incoming = Array.from(files || []);
-    if (!incoming.length) return;
+    var arr = [];
+    for (var i = 0; i < (files ? files.length : 0); i++) {
+      arr.push(files[i]);
+    }
+    if (!arr.length) return;
 
-    const accepted = [];
-    let rejected = 0;
+    var accepted = [];
+    var rejected = 0;
 
-    incoming.forEach(f => {
-      if (!isAccepted(f) || overLimit(f)) { rejected++; return; }
-      accepted.push(f);
-    });
+    for (var j = 0; j < arr.length; j++) {
+      var f = arr[j];
+      if (!isAccepted(f) || overLimit(f)) {
+        rejected++;
+      } else {
+        accepted.push(f);
+      }
+    }
 
-    if (accepted.length) {
+    if (accepted.length > 0) {
       queue = queue.concat(accepted);
       renderQueue();
-      setStatus(`${accepted.length} file(s) added.`);
+      setStatus(accepted.length + " file(s) added.");
     }
+
     if (rejected > 0) {
-      setStatus(`${rejected} file(s) skipped (PDF/PNG/JPG only, ≤ ${MAX_MB} MB).`, true);
+      setStatus(
+        rejected +
+          " file(s) skipped (PDF/PNG/JPG only, ≤ " +
+          MAX_MB +
+          " MB).",
+        true
+      );
     }
   }
 
   // ---------- Picker ----------
   function openPickerOnce() {
     if (!fileInput || pickerArmed) return;
+
     pickerArmed = true;
-    const disarm = () => { pickerArmed = false; };
-    const onChange = () => { disarm(); fileInput.removeEventListener("change", onChange); };
-    fileInput.addEventListener("change", onChange, { once: true });
-    setTimeout(disarm, 2500);
-    try { fileInput.showPicker?.() ?? fileInput.click(); } catch { fileInput.click(); }
+    setTimeout(function () {
+      pickerArmed = false;
+    }, 2500);
+
+    try {
+      if (fileInput.showPicker) fileInput.showPicker();
+      else fileInput.click();
+    } catch (e) {
+      fileInput.click();
+    }
   }
 
-  fileInput.addEventListener("click", (e) => e.stopPropagation(), true);
-  dropzone.addEventListener("click", () => openPickerOnce(), true);
-  dropzone.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPickerOnce(); }
+  fileInput.addEventListener(
+    "click",
+    function (e) {
+      e.stopPropagation();
+    },
+    true
+  );
+
+  dropzone.addEventListener(
+    "click",
+    function () {
+      openPickerOnce();
+    },
+    true
+  );
+
+  dropzone.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openPickerOnce();
+    }
   });
-  fileInput.addEventListener("change", (e) => { addFiles(e.target.files); e.target.value = ""; });
 
-  ["dragenter","dragover"].forEach(evt => dropzone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dropzone.classList.add("is-dragover"); }));
-  ["dragleave","drop"].forEach(evt => dropzone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); if (evt === "drop" && e.dataTransfer?.files) addFiles(e.dataTransfer.files); dropzone.classList.remove("is-dragover"); }));
+  fileInput.addEventListener("change", function (e) {
+    addFiles(e.target.files);
+    fileInput.value = "";
+  });
 
-  clearBtn?.addEventListener("click", () => { queue=[]; fileInput.value=""; renderQueue(); setStatus("Cleared selection."); });
+  ["dragenter", "dragover"].forEach(function (evt) {
+    dropzone.addEventListener(evt, function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.add("is-dragover");
+    });
+  });
 
-  // ---------- Upload all queued files ----------
+  ["dragleave", "drop"].forEach(function (evt) {
+    dropzone.addEventListener(evt, function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (evt === "drop") {
+        if (e.dataTransfer && e.dataTransfer.files) {
+          addFiles(e.dataTransfer.files);
+        }
+      }
+
+      dropzone.classList.remove("is-dragover");
+    });
+  });
+
+  clearBtn.addEventListener("click", function () {
+    queue = [];
+    fileInput.value = "";
+    renderQueue();
+    setStatus("Cleared selection.");
+  });
+
+  // ---------- Upload All ----------
   async function uploadAll() {
     while (queue.length > 0) {
-      const file = queue[0];
-      const fd = new FormData();
+      var file = queue[0];
+
+      var fd = new FormData();
       fd.append("receipt", file, file.name);
 
       uploadBtn.disabled = true;
-      dropzone?.setAttribute("aria-busy", "true");
-      setStatus(`Uploading ${file.name}…`);
+      dropzone.setAttribute("aria-busy", "true");
+      setStatus("Uploading " + file.name + "…");
 
       try {
-        // Correct endpoint: POST /api/receipts
-        await fetchJSON(UPLOAD_URL, { method: "POST", body: fd });
-        setStatus(`Uploaded: ${file.name}`);
+        // IMPORTANT FIX: use formData, not body
+        await fetchJSON(UPLOAD_URL, {
+          method: "POST",
+          formData: fd
+        });
+
+        setStatus("Uploaded: " + file.name);
         queue.shift();
         renderQueue();
         await refreshRecent();
       } catch (err) {
         if (err.status === 401 || err.status === 403) {
-          const url = new URL("./login.html", location.href);
+          var url = new URL("./login.html", location.href);
           url.searchParams.set("redirect", "upload.html");
           location.href = url.toString();
           return;
         }
-        setStatus(`Upload failed: ${err.message}`, true);
+        setStatus("Upload failed: " + err.message, true);
         break;
       } finally {
-        dropzone?.removeAttribute("aria-busy");
+        dropzone.removeAttribute("aria-busy");
       }
     }
+
     uploadBtn.disabled = queue.length === 0;
   }
 
-  uploadBtn?.addEventListener("click", uploadAll);
+  uploadBtn.addEventListener("click", uploadAll);
 
   // ---------- Init ----------
   renderQueue();

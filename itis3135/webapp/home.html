@@ -14,13 +14,13 @@
   <link rel="stylesheet" href="styles/default.css" />
   <link rel="stylesheet" href="styles/home.css" />
 </head>
+
 <body>
   <!-- Header injected by default.js -->
   <div id="header"></div>
 
-  <!-- ==================== MAIN ==================== -->
   <main>
-    <!-- Greeting / context -->
+    <!-- Greeting -->
     <section class="welcome">
       <div class="welcome-left">
         <h1 id="welcomeTitle">Welcome back</h1>
@@ -28,10 +28,10 @@
       </div>
 
       <div class="quick-actions" role="group" aria-label="Quick actions">
-        <button class="btn btn--primary" id="btnUpload">Upload Receipt</button>
+        <button class="btn btn-primary" id="btnUpload">Upload Receipt</button>
         <button class="btn" id="btnAddTxn">Add Transaction</button>
         <button class="btn" id="btnExport">Export CSV</button>
-        <a class="btn btn--link" href="reports.html" id="btnReports">Go to Reports →</a>
+        <a class="btn btn-link" href="reports.html" id="btnReports">Go to Reports →</a>
       </div>
     </section>
 
@@ -63,7 +63,10 @@
           <h2>Spending by Category</h2>
           <div class="legend" id="chartLegend" aria-hidden="true"></div>
         </div>
-        <canvas id="categoriesChart" width="900" height="260" aria-label="Bar chart of spending by category" role="img"></canvas>
+
+        <canvas id="categoriesChart" width="900" height="260"
+                aria-label="Bar chart of spending by category" role="img"></canvas>
+
         <p class="chart-caption subtle">Bars scaled to the highest category.</p>
       </div>
 
@@ -77,7 +80,7 @@
     <section class="recent" aria-label="Recent transactions">
       <div class="recent-header">
         <h2>Recent Transactions</h2>
-        <a class="btn btn--link" href="records.html">View all</a>
+        <a class="btn btn-link" href="records.html">View all</a>
       </div>
 
       <div class="table-wrap card" role="region" aria-label="Recent transactions table" tabindex="0">
@@ -92,6 +95,7 @@
               <th scope="col">Notes</th>
             </tr>
           </thead>
+
           <tbody id="txnTbody">
             <tr><td colspan="6" class="subtle">Loading…</td></tr>
           </tbody>
@@ -103,59 +107,42 @@
   <!-- Footer injected by default.js -->
   <div id="footer"></div>
 
-  <!-- ========== ADD TRANSACTION MODAL ========== -->
+  <!-- Modal -->
   <div id="addTxnModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-content card">
       <h2 id="modalTitle">Add New Transaction</h2>
 
       <form id="txnForm" class="txn-form">
         <div class="form-row">
-          <label for="txnDate">
-            <span>Date</span>
-          </label>
-          <input
-            type="date"
-            id="txnDate"
-            name="txnDate"
-            required
-            aria-describedby="dateHelp"
-          />
+          <label for="txnDate"><span>Date</span></label>
+          <input type="date" id="txnDate" name="txnDate" required aria-describedby="dateHelp" />
+
           <p id="dateHelp" class="subtle" style="font-size:0.9rem;">
             Format: YYYY-MM-DD. Some browsers may display a text field instead of a date picker.
           </p>
 
-          <label for="txnAmount">
-            <span>Amount</span>
-          </label>
+          <label for="txnAmount"><span>Amount</span></label>
           <input type="number" id="txnAmount" name="txnAmount" step="0.01" required />
         </div>
 
         <div class="form-row">
-          <label for="txnSource">
-            <span>Source</span>
-          </label>
+          <label for="txnSource"><span>Source</span></label>
           <input type="text" id="txnSource" name="txnSource" required />
 
-          <label for="txnCategory">
-            <span>Category</span>
-          </label>
+          <label for="txnCategory"><span>Category</span></label>
           <input type="text" id="txnCategory" name="txnCategory" required />
         </div>
 
         <div class="form-row">
-          <label for="txnMethod">
-            <span>Payment Method</span>
-          </label>
+          <label for="txnMethod"><span>Payment Method</span></label>
           <input type="text" id="txnMethod" name="txnMethod" />
 
-          <label for="txnNotes">
-            <span>Notes</span>
-          </label>
+          <label for="txnNotes"><span>Notes</span></label>
           <input type="text" id="txnNotes" name="txnNotes" />
         </div>
 
         <div class="modal-actions">
-          <button type="submit" class="btn btn--primary">Save</button>
+          <button type="submit" class="btn btn-primary">Save</button>
           <button type="button" class="btn" id="btnCancelModal">Cancel</button>
         </div>
       </form>
@@ -166,11 +153,12 @@
   <script defer src="./scripts/default.js"></script>
   <script defer src="./scripts/home.js"></script>
 
-  <!-- JS fallback for browsers that do NOT support <input type="date"> -->
+  <!-- JS fallback for non-supporting browsers -->
   <script>
     (function () {
       var input = document.createElement("input");
       input.setAttribute("type", "date");
+
       if (input.type !== "date") {
         var help = document.getElementById("dateHelp");
         if (help) {
@@ -179,5 +167,6 @@
       }
     })();
   </script>
+
 </body>
 </html>

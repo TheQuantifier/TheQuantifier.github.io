@@ -14,42 +14,71 @@
   <link rel="stylesheet" href="styles/auth.css" />
 </head>
 <body class="landing-dark">
-  <header class="nf-header" role="banner">
+
+  <!-- HEADER -->
+  <header class="nf-header">
     <div class="nf-header-inner">
+
       <div class="nf-brand-center">
         <span class="nf-logo">Finance App</span>
       </div>
+
       <nav class="nf-auth-right" aria-label="Authentication">
-        <a href="register.html" class="nf-login">Register</a>
+        <a href="register.html" class="nflogin">Register</a>
       </nav>
+
     </div>
   </header>
 
+  <!-- MAIN -->
   <main>
     <section class="nf-hero">
       <div class="nf-hero-content">
+
         <h1 class="nf-title">Welcome back</h1>
         <p class="nf-subtitle">Log in to manage your finances and view your records.</p>
 
         <form id="loginForm" class="nf-signup" autocomplete="off">
-          <input type="email" id="email" class="nf-input" placeholder="Email address" aria-label="Email address" required />
-          <input type="password" id="password" class="nf-input" placeholder="Password" aria-label="Password" required />
-          <button type="submit" class="nf-btn">Login</button>
+          <input 
+            type="email" 
+            id="email" 
+            class="nfinput"
+            placeholder="Email address" 
+            aria-label="Email address"
+            required 
+          />
+
+          <input 
+            type="password" 
+            id="password" 
+            class="nfinput"
+            placeholder="Password" 
+            aria-label="Password"
+            required 
+          />
+
+          <button type="submit" class="nfbtn">Login</button>
         </form>
 
-        <p class="nf-hint">Don’t have an account? <a href="register.html">Create one</a>.</p>
-        <p id="loginError" class="nf-error"></p>
+        <p class="nf-hint">
+          Don’t have an account?
+          <a href="register.html">Create one</a>.
+        </p>
+
+        <p id="loginError" class="nferror"></p>
+
       </div>
     </section>
   </main>
 
-  <footer class="nf-footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="nf-footer">
     <div class="nf-footer-inner">
       <p>&copy; <span id="year"></span> Finance App. All rights reserved.</p>
     </div>
   </footer>
 
-  <!-- Scripts -->
+  <!-- SCRIPTS -->
   <script defer src="scripts/default.js"></script>
   <script defer src="scripts/index.js"></script>
 </body>

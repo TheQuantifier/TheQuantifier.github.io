@@ -1,5 +1,5 @@
 // scripts/register.js
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("registerForm");
   const msg = document.getElementById("registerMessage");
   const nameEl = document.getElementById("name");
@@ -8,42 +8,55 @@ document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("registerBtn");
   const yearEl = document.getElementById("year");
 
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
+  if (yearEl) {
+    yearEl.textContent = new Date().getFullYear();
+  }
+
   if (!form) return;
 
-  const setMsg = (text, color = "") => {
+  function setMsg(text, color) {
     if (!msg) return;
     msg.textContent = text;
-    msg.style.color = color;
-  };
+    msg.style.color = color || "";
+  }
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
     setMsg("");
 
-    const name = nameEl?.value.trim();
-    const email = emailEl?.value.trim();
-    const password = passEl?.value || "";
+    const name = nameEl ? nameEl.value.trim() : "";
+    const email = emailEl ? emailEl.value.trim() : "";
+    const password = passEl ? passEl.value : "";
 
     if (!name || !email || !password) {
-      return setMsg("Please fill in all fields.", "red");
+      setMsg("Please fill in all fields.", "red");
+      return;
     }
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      return setMsg("Please enter a valid email address.", "red");
+
+    var emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!emailPattern.test(email)) {
+      setMsg("Please enter a valid email address.", "red");
+      return;
     }
+
     if (password.length < 6) {
-      return setMsg("Password must be at least 6 characters long.", "red");
+      setMsg("Password must be at least 6 characters long.", "red");
+      return;
     }
 
     // Simulate request
-    btn.disabled = true;
+    if (btn) btn.disabled = true;
     setMsg("Creating your account...", "black");
 
-    setTimeout(() => {
+    setTimeout(function () {
       setMsg("✅ Account created! Redirecting to login…", "green");
-      const params = new URLSearchParams(location.search);
-      const redirect = params.get("redirect") || "index.html";
-      setTimeout(() => (window.location.href = redirect), 600);
+
+      var params = new URLSearchParams(window.location.search);
+      var redirect = params.get("redirect") || "index.html";
+
+      setTimeout(function () {
+        window.location.href = redirect;
+      }, 600);
     }, 500);
   });
 });

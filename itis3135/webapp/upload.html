@@ -20,21 +20,42 @@
     </section>
 
     <section class="uploader card">
+
+      <!-- Accessible label still works -->
       <label for="fileInput" class="file-label">Choose files</label>
-      <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Upload dropzone">
+
+      <!-- Input moved OUT of the role=button container -->
+      <input
+        id="fileInput"
+        class="dz-input"
+        type="file"
+        accept=".pdf,.png,.jpg,.jpeg"
+        style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;"
+      />
+
+      <!-- Dropzone (no input inside anymore) -->
+      <div
+        id="dropzone"
+        class="dropzone"
+        role="button"
+        tabindex="0"
+        aria-label="Upload dropzone"
+      >
         <div class="dz-inner">
-          <svg class="dz-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6M7 10l5-6 5 6M12 4v12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          <svg class="dz-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 13v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6M7 10l5-6 5 6M12 4v12"
+                  fill="none" stroke="currentColor" stroke-width="2" />
+          </svg>
           <div class="dz-text">
             <strong>Click to select</strong>
             or drag & drop files here
           </div>
         </div>
-        <input id="fileInput" class="dz-input" type="file" accept=".pdf,.png,.jpg,.jpeg" />
       </div>
 
       <ul class="tips">
         <li>Accepted: PDF, PNG, JPG (up to 50MB)</li>
-        <li>We store the file under <code>uploads/</code> and save metadata in your MongoDB <code>receipts</code> collection.</li>
+        <li>Files stored under <code>uploads/</code>, metadata saved in MongoDB <code>receipts</code>.</li>
       </ul>
 
       <div class="file-list-wrap">
@@ -72,12 +93,11 @@
     </section>
   </main>
 
-  <!-- Footer injected by default.js -->
+  <!-- Footer -->
   <div id="footer"></div>
 
-  <!-- Scripts (versioned to bypass cache) -->
-  <script type="module" defer src="./scripts/api.js?v=3"></script>
-  <script type="module" defer src="./scripts/default.js?v=3"></script>
-  <script type="module" defer src="./scripts/upload.js?v=3"></script>
+  <script type="module" src="./scripts/api.js"></script>
+  <script type="module" src="./scripts/default.js"></script>
+  <script type="module" src="./scripts/upload.js"></script>
 </body>
 </html>

@@ -1,148 +1,190 @@
 // scripts/reports.js
-// Offline reports: loads from data/data.json + merges userTxns from localStorage.
-// Keeps your PIE (doughnut) chart via Chart.js + DataLabels plugin.
-// The time-series line remains a lightweight custom canvas chart.
+// Validator-safe version (no optional catch binding, no optional chaining)
 
-(() => {
-  const DATA_URL = "data/data.json";
-  const LOCAL_KEY = "userTxns";
-  const CURRENCY = "USD";
+(function () {
+  "use strict";
 
-  let _pie = null; // Chart.js instance
+  var DATA_URL = "data/data.json";
+  var LOCAL_KEY = "userTxns";
+  var CURRENCY = "USD";
+  var _pie = null; // Chart.js instance
 
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const toNum = (x) => (Number.isFinite(+x) ? +x : 0);
+  // ---------- Helpers ----------
+  function $(sel, root) {
+    return (root || document).querySelector(sel);
+  }
 
-  const fmtMoney = (n) =>
-    new Intl.NumberFormat(undefined, { style: "currency", currency: CURRENCY })
-      .format(toNum(n));
+  function toNum(x) {
+    var n = Number(x);
+    return isFinite(n) ? n : 0;
+  }
 
-  const fmtDate = (iso) => {
+  function fmtMoney(n) {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: CURRENCY
+    }).format(toNum(n));
+  }
+
+  function fmtDate(iso) {
     if (!iso) return "";
-    const d = new Date(iso.length === 10 ? iso + "T00:00:00" : iso);
-    if (isNaN(d)) return iso;
-    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "2-digit" });
-  };
+    var s = iso.length === 10 ? iso + "T00:00:00" : iso;
+    var d = new Date(s);
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "2-digit"
+    });
+  }
 
   function yyyymm(iso) {
     if (!iso) return null;
-    const m = iso.match(/^(\d{4})-(\d{2})/);
-    return m ? `${m[1]}-${m[2]}` : null;
+    var m = iso.match(/^(\d{4})-(\d{2})/);
+    return m ? m[1] + "-" + m[2] : null;
   }
 
   function normalizeDateKey(iso) {
     if (!iso) return null;
-    const d = new Date(iso.length === 10 ? iso + "T00:00:00" : iso);
-    if (isNaN(d)) return null;
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
+    var s = iso.length === 10 ? iso + "T00:00:00" : iso;
+    var d = new Date(s);
+    if (isNaN(d.getTime())) return null;
+    var yyyy = d.getFullYear();
+    var mm = String(d.getMonth() + 1).padStart(2, "0");
+    var dd = String(d.getDate()).padStart(2, "0");
+    return yyyy + "-" + mm + "-" + dd;
   }
 
-  // ---------- Data load & merge ----------
-  async function loadBase() {
-    const res = await fetch(DATA_URL, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to load ${DATA_URL} (${res.status})`);
-    return res.json();
+  // ---------- Load & merge ----------
+  function loadBase() {
+    return fetch(DATA_URL, { cache: "no-store" }).then(function (res) {
+      if (!res.ok) {
+        throw new Error("Failed to load " + DATA_URL + " (" + res.status + ")");
+      }
+      return res.json();
+    });
   }
 
   function getLocalTxns() {
-    try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); }
-    catch { return []; }
+    try {
+      return JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+    } catch (e) {
+      return [];
+    }
   }
 
   function mergeData(base) {
-    const baseExp = Array.isArray(base.expenses) ? base.expenses : [];
-    const baseInc = Array.isArray(base.income)   ? base.income   : [];
-    const local   = getLocalTxns();
+    var baseExp = Array.isArray(base.expenses) ? base.expenses : [];
+    var baseInc = Array.isArray(base.income) ? base.income : [];
+    var local = getLocalTxns();
 
-    const localExp = local.filter(t => (t.type || "expense") === "expense");
-    const localInc = local.filter(t => t.type === "income");
+    var localExp = local.filter(function (t) { return (t.type || "expense") === "expense"; });
+    var localInc = local.filter(function (t) { return t.type === "income"; });
 
-    const expenses = [...baseExp, ...localExp].map(x => ({
-      date: x.date || "",
-      source: x.source || "",
-      category: x.category || "Uncategorized",
-      amount: toNum(x.amount),
-      method: x.payment_method || x.method || "",
-      notes: x.notes || ""
-    }));
+    var expenses = baseExp.concat(localExp).map(function (x) {
+      return {
+        date: x.date || "",
+        source: x.source || "",
+        category: x.category || "Uncategorized",
+        amount: toNum(x.amount),
+        method: x.payment_method || x.method || "",
+        notes: x.notes || ""
+      };
+    });
 
-    const income = [...baseInc, ...localInc].map(x => ({
-      date: x.date || "",
-      source: x.source || "",
-      category: x.category || "Uncategorized",
-      amount: toNum(x.amount),
-      method: x.payment_method || x.method || "",
-      notes: x.notes || ""
-    }));
+    var income = baseInc.concat(localInc).map(function (x) {
+      return {
+        date: x.date || "",
+        source: x.source || "",
+        category: x.category || "Uncategorized",
+        amount: toNum(x.amount),
+        method: x.payment_method || x.method || "",
+        notes: x.notes || ""
+      };
+    });
 
-    return { expenses, income };
+    return { expenses: expenses, income: income };
   }
 
-  // ---------- Derivations ----------
+  // ---------- Summary ----------
   function computeSummary(expenses) {
-    const categories = {};
-    let total = 0;
+    var categories = {};
+    var total = 0;
 
-    for (const t of expenses) {
-      const amt = toNum(t.amount);
+    var i, t, amt, cat;
+    for (i = 0; i < expenses.length; i++) {
+      t = expenses[i];
+      amt = toNum(t.amount);
       total += amt;
-      const cat = t.category || "Uncategorized";
+      cat = t.category || "Uncategorized";
       categories[cat] = (categories[cat] || 0) + amt;
     }
 
-    // monthly average by distinct months with any expense
-    const months = new Set(expenses.map(t => yyyymm(t.date)).filter(Boolean));
-    const monthlyAvg = total / Math.max(1, months.size);
-
-    // top category
-    let top = "N/A";
-    let max = 0;
-    for (const [k, v] of Object.entries(categories)) {
-      if (v > max) { max = v; top = k; }
+    var monthsSet = {};
+    for (i = 0; i < expenses.length; i++) {
+      var key = yyyymm(expenses[i].date);
+      if (key) monthsSet[key] = true;
     }
+    var monthCount = Object.keys(monthsSet).length || 1;
+    var monthlyAvg = total / monthCount;
 
-    return { total, monthlyAvg, topCategory: top, categories };
+    var top = "N/A";
+    var max = 0;
+    Object.keys(categories).forEach(function (k) {
+      if (categories[k] > max) {
+        max = categories[k];
+        top = k;
+      }
+    });
+
+    return {
+      total: total,
+      monthlyAvg: monthlyAvg,
+      topCategory: top,
+      categories: categories
+    };
   }
 
   function sumByDate(rows) {
-    const map = {};
-    for (const r of rows) {
-      const key = normalizeDateKey(r.date);
-      if (!key) continue;
+    var map = {};
+    rows.forEach(function (r) {
+      var key = normalizeDateKey(r.date);
+      if (!key) return;
       map[key] = (map[key] || 0) + toNum(r.amount);
-    }
+    });
     return map;
   }
 
-  // ---------- Summary cards ----------
-  function renderCards({ total, monthlyAvg, topCategory }) {
-    const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-    set("total-expenses", fmtMoney(total));
-    set("monthly-average", fmtMoney(monthlyAvg));
-    set("top-category", topCategory || "N/A");
+  // ---------- Cards ----------
+  function renderCards(summary) {
+    function set(id, text) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+    set("total-expenses", fmtMoney(summary.total));
+    set("monthly-average", fmtMoney(summary.monthlyAvg));
+    set("top-category", summary.topCategory || "N/A");
   }
 
-  // ---------- PIE (doughnut) with Chart.js ----------
+  // ---------- PIE Chart ----------
   function renderPieChart(categories) {
-    const canvas = $("#categoryChart");
+    var canvas = $("#categoryChart");
     if (!canvas || typeof Chart === "undefined") return;
 
-    const labels = Object.keys(categories || {});
-    const values = Object.values(categories || {}).map(toNum);
+    var labels = Object.keys(categories);
+    var values = labels.map(function (k) { return categories[k]; });
 
-    // palettes (repeat if needed)
-    const colors = [
-      "#007bff","#28a745","#ffc107","#dc3545",
-      "#6f42c1","#17a2b8","#6610f2","#6c757d",
-      "#20c997","#fd7e14"
+    var colors = [
+      "#007bff", "#28a745", "#ffc107", "#dc3545",
+      "#6f42c1", "#17a2b8", "#6610f2", "#6c757d",
+      "#20c997", "#fd7e14"
     ];
 
-    if (_pie) { _pie.destroy(); _pie = null; }
+    if (_pie) {
+      _pie.destroy();
+      _pie = null;
+    }
 
-    // Register plugin if present
     if (window.ChartDataLabels) {
       Chart.register(window.ChartDataLabels);
     }
@@ -150,11 +192,13 @@
     _pie = new Chart(canvas, {
       type: "doughnut",
       data: {
-        labels,
+        labels: labels,
         datasets: [{
           label: "Spending by Category",
           data: values,
-          backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+          backgroundColor: labels.map(function (_, i) {
+            return colors[i % colors.length];
+          }),
           borderWidth: 0
         }]
       },
@@ -162,20 +206,11 @@
         responsive: false,
         plugins: {
           legend: { position: "bottom" },
-          datalabels: window.ChartDataLabels ? {
-            color: "#fff",
-            font: { weight: "bold", size: 12 },
-            formatter: (val, ctx) => {
-              const data = ctx.chart.data.datasets[0].data;
-              const total = data.reduce((s, v) => s + toNum(v), 0);
-              if (!total) return "0%";
-              const pct = (val / total) * 100;
-              return `${pct.toFixed(1)}%`;
-            }
-          } : undefined,
           tooltip: {
             callbacks: {
-              label: (ctx) => `${ctx.label}: ${fmtMoney(ctx.parsed)}`
+              label: function (ctx) {
+                return ctx.label + ": " + fmtMoney(ctx.parsed);
+              }
             }
           }
         },
@@ -184,51 +219,59 @@
     });
   }
 
-  // ---------- Lightweight line chart (custom canvas) ----------
+  // ---------- Line Chart ----------
   function drawLineChart(canvas, seriesMap, toggles) {
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    var ctx = canvas.getContext("2d");
 
-    const allDates = Array.from(new Set([
-      ...Object.keys(seriesMap.expenses || {}),
-      ...Object.keys(seriesMap.income || {})
-    ])).sort();
+    // collect all dates
+    var datesObj = {};
+    function addKeys(obj) {
+      if (!obj) return;
+      Object.keys(obj).forEach(function (k) { datesObj[k] = true; });
+    }
+    addKeys(seriesMap.expenses);
+    addKeys(seriesMap.income);
+    var allDates = Object.keys(datesObj).sort();
 
-    const expData = allDates.map(d => toNum(seriesMap.expenses?.[d] || 0));
-    const incData = allDates.map(d => toNum(seriesMap.income?.[d] || 0));
+    var expData = allDates.map(function (d) {
+      return seriesMap.expenses && seriesMap.expenses[d] ? seriesMap.expenses[d] : 0;
+    });
 
-    const enabledExp = !!toggles.expenses?.checked;
-    const enabledInc = !!toggles.income?.checked;
+    var incData = allDates.map(function (d) {
+      return seriesMap.income && seriesMap.income[d] ? seriesMap.income[d] : 0;
+    });
 
-    const maxY = Math.max(
-      1,
-      ...(enabledExp ? expData : [0]),
-      ...(enabledInc ? incData : [0])
-    );
+    var enabledExp = toggles.expenses && toggles.expenses.checked;
+    var enabledInc = toggles.income && toggles.income.checked;
+
+    var maxY = 1;
+    expData.forEach(function (v) { if (enabledExp && v > maxY) maxY = v; });
+    incData.forEach(function (v) { if (enabledInc && v > maxY) maxY = v; });
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const P = { t: 20, r: 20, b: 50, l: 50 };
-    const innerW = canvas.width - P.l - P.r;
-    const innerH = canvas.height - P.t - P.b;
+    var P = { t: 20, r: 20, b: 50, l: 50 };
+    var innerW = canvas.width - P.l - P.r;
+    var innerH = canvas.height - P.t - P.b;
 
     // axes
     ctx.strokeStyle = "#e5e7eb";
-    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(P.l, P.t);
     ctx.lineTo(P.l, P.t + innerH);
     ctx.lineTo(P.l + innerW, P.t + innerH);
     ctx.stroke();
 
-    // y ticks (4)
+    // y ticks
     ctx.fillStyle = "#6b7280";
     ctx.font = "12px system-ui,-apple-system,Segoe UI,Roboto,sans-serif";
-    for (let i = 0; i <= 4; i++) {
-      const val = (i / 4) * maxY;
-      const y = P.t + innerH - (val / maxY) * (innerH - 10);
+    var i;
+    for (i = 0; i <= 4; i++) {
+      var val = (i / 4) * maxY;
+      var y = P.t + innerH - (val / maxY) * (innerH - 10);
       ctx.fillText(fmtMoney(val), 4, y + 4);
-      ctx.strokeStyle = "#f3f4f6";
       ctx.beginPath();
+      ctx.strokeStyle = "#f3f4f6";
       ctx.moveTo(P.l, y);
       ctx.lineTo(P.l + innerW, y);
       ctx.stroke();
@@ -238,21 +281,22 @@
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      const stepX = innerW / Math.max(1, data.length - 1);
-      data.forEach((v, i) => {
-        const x = P.l + i * stepX;
-        const y = P.t + innerH - (v / maxY) * (innerH - 10);
+      var stepX = innerW / Math.max(1, data.length - 1);
+
+      data.forEach(function (v, i) {
+        var x = P.l + i * stepX;
+        var y = P.t + innerH - (v / maxY) * (innerH - 10);
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
       ctx.stroke();
 
-      // fill under line (soft)
+      // fill
       ctx.fillStyle = color + "33";
       ctx.beginPath();
-      data.forEach((v, i) => {
-        const x = P.l + i * stepX;
-        const y = P.t + innerH - (v / maxY) * (innerH - 10);
+      data.forEach(function (v, i) {
+        var x = P.l + i * stepX;
+        var y = P.t + innerH - (v / maxY) * (innerH - 10);
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
@@ -262,52 +306,56 @@
       ctx.fill();
     }
 
-    if (enabledExp) plotLine(expData, "#dc3545");  // red-ish
-    if (enabledInc) plotLine(incData, "#28a745");  // green-ish
+    if (enabledExp) plotLine(expData, "#dc3545");
+    if (enabledInc) plotLine(incData, "#28a745");
 
-    // x labels (sparse)
-    const tickEvery = Math.max(1, Math.floor(allDates.length / 8));
-    ctx.fillStyle = "#6b7280";
+    // x labels
+    var tickEvery = Math.max(1, Math.floor(allDates.length / 8));
     ctx.textAlign = "center";
-    allDates.forEach((d, i) => {
+    allDates.forEach(function (d, i) {
       if (i % tickEvery !== 0 && i !== allDates.length - 1) return;
-      const x = P.l + (innerW / Math.max(1, allDates.length - 1)) * i;
+      var x = P.l + (innerW / Math.max(1, allDates.length - 1)) * i;
       ctx.fillText(fmtDate(d), x, P.t + innerH + 18);
     });
   }
 
-  // ---------- init ----------
-  async function init() {
-    try {
-      const base = await loadBase();
-      const { expenses, income } = mergeData(base);
+  // ---------- Init ----------
+  function init() {
+    loadBase()
+      .then(function (base) {
+        var merged = mergeData(base);
+        var expenses = merged.expenses;
+        var income = merged.income;
 
-      // Summary
-      const summary = computeSummary(expenses);
-      renderCards(summary);
+        var summary = computeSummary(expenses);
+        renderCards(summary);
+        renderPieChart(summary.categories);
 
-      // PIE chart for categories
-      renderPieChart(summary.categories);
+        var expenseByDate = sumByDate(expenses);
+        var incomeByDate = sumByDate(income);
 
-      // Line chart series
-      const expenseByDate = sumByDate(expenses);
-      const incomeByDate  = sumByDate(income);
+        var expToggle = $("#toggle-expenses");
+        var incToggle = $("#toggle-income");
 
-      const expToggle = $("#toggle-expenses");
-      const incToggle = $("#toggle-income");
+        function redraw() {
+          drawLineChart(
+            $("#monthlyChart"),
+            { expenses: expenseByDate, income: incomeByDate },
+            { expenses: expToggle, income: incToggle }
+          );
+        }
 
-      const redrawLine = () =>
-        drawLineChart($("#monthlyChart"), { expenses: expenseByDate, income: incomeByDate }, { expenses: expToggle, income: incToggle });
-
-      // initial draw + wiring
-      redrawLine();
-      expToggle?.addEventListener("change", redrawLine);
-      incToggle?.addEventListener("change", redrawLine);
-
-    } catch (err) {
-      console.error("Error loading reports:", err);
-      document.querySelectorAll(".card p").forEach(p => (p.textContent = "Error loading data"));
-    }
+        redraw();
+        if (expToggle) expToggle.addEventListener("change", redraw);
+        if (incToggle) incToggle.addEventListener("change", redraw);
+      })
+      .catch(function (err) {
+        console.error("Error loading reports:", err);
+        var cards = document.querySelectorAll(".card p");
+        for (var i = 0; i < cards.length; i++) {
+          cards[i].textContent = "Error loading data";
+        }
+      });
   }
 
   document.addEventListener("DOMContentLoaded", init);

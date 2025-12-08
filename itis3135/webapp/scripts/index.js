@@ -1,40 +1,51 @@
 // scripts/index.js
 document.addEventListener("DOMContentLoaded", () => {
+
   const form = document.getElementById("loginForm");
   const errorEl = document.getElementById("loginError");
   const emailEl = document.getElementById("email");
   const passEl = document.getElementById("password");
   const yearEl = document.getElementById("year");
 
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
-  if (!form) return;
+  // Set footer year
+  if (yearEl) {
+    yearEl.textContent = new Date().getFullYear();
+  }
+
+  // If the form isn't present, stop here
+  if (!form || !emailEl || !passEl) return;
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     if (errorEl) errorEl.textContent = "";
 
-    const email = emailEl?.value.trim();
-    const password = passEl?.value.trim();
+    const email = emailEl.value.trim();
+    const password = passEl.value.trim();
 
     if (!email || !password) {
       if (errorEl) errorEl.textContent = "Please enter both email and password.";
       return;
     }
 
-    // OPTIONAL: try to match user name from local data
+    // Try to load name from local data file (optional)
     let nameForSession = "";
     try {
       const res = await fetch("data/data.json", { cache: "no-store" });
       if (res.ok) {
         const json = await res.json();
-        const match = (json.users || []).find(u => (u.email || "").toLowerCase() === email.toLowerCase());
-        if (match?.name) nameForSession = match.name;
+        const users = Array.isArray(json.users) ? json.users : [];
+        const match = users.find((u) => (u.email || "").toLowerCase() === email.toLowerCase());
+        if (match && match.name) {
+          nameForSession = match.name;
+        }
       }
-    } catch {
-      // ignore; we'll just fall back to email
+    } catch (err) {
+      // If missing or malformed, silently ignore
+      console.warn("Optional user data file missing or invalid.");
     }
 
-    // Fake auth: store session "identity"
+    // Store simple session identity
     sessionStorage.setItem("currentUserEmail", email);
     sessionStorage.setItem("currentUserName", nameForSession || email);
 

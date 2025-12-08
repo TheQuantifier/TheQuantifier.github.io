@@ -1,4 +1,6 @@
-/* ========== RECORDS PAGE (Expenses + Income) — page-specific only ========== */
+/* =========================================================
+   RECORDS PAGE (Expenses + Income) — page-specific only
+   ========================================================= */
 
 /* Section separator */
 .section-divider {
@@ -16,31 +18,53 @@
   gap: 1rem;
   margin-bottom: 1rem;
 }
-.records-hero h1 { margin: 0; }
-.records-hero .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.records-hero h1 {
+  margin: 0;
+}
+.records-hero .actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
 
 /* Filters */
-.filters.card { margin: 1rem 0 1.25rem; }
-.filters form { display: flex; flex-direction: column; gap: 1rem; }
-
-.filters .grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(180px, 1fr));
-  gap: 0.8rem;
+.card {
+  margin: 1rem 0 1.25rem;
 }
-.filters label { display: flex; flex-direction: column; gap: 0.35rem; }
-.filters label span { font-weight: 600; font-size: 0.95rem; }
-.filters input, .filters select {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+.filters form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.filters label span {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.filters input,
+.filters select {
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: var(--radius, 8px);
   padding: 0.55rem 0.65rem;
   background: #fff;
 }
 
-.filter-buttons { display: flex; gap: 0.6rem; }
+.filter-buttons {
+  display: flex;
+  gap: 0.6rem;
+}
 
-/* Table wrapper for this page */
-.records-table .table-wrap { overflow-x: auto; }
+/* Table wrapper */
+.records-table .table-wrap {
+  overflow-x: auto;
+}
 
 /* Pager */
 .pager {
@@ -51,11 +75,14 @@
   padding: 0.8rem 0;
 }
 
-/* ===== Modal (Add Transaction) ===== */
+/* =========================================================
+   MODAL (Add Transaction)
+   ========================================================= */
+
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.55); /* darker, subtle blur-like overlay */
+  background: rgba(17, 24, 39, 0.55);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -126,20 +153,23 @@
   margin-top: 1.25rem;
 }
 
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
 @media (max-width: 600px) {
+  .records-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .modal-content {
+    width: 90%;
+    max-width: 400px;
+    padding: 1.5rem 1.75rem;
+  }
+
   .form-row {
     flex-direction: column;
   }
-}
-
-/* Responsive adjustments */
-@media (max-width: 900px) {
-  .filters .grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
-}
-
-@media (max-width: 600px) {
-  .records-hero { flex-direction: column; align-items: flex-start; }
-  .filters .grid { grid-template-columns: 1fr; }
-  .modal-content { width: 90%; max-width: 400px; padding: 1.5rem 1.75rem; }
-  .form-row { flex-direction: column; }
 }

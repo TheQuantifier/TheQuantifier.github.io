@@ -33,6 +33,7 @@ body {
 }
 
 /* ===== ACCESSIBILITY ===== */
+
 :focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
@@ -197,6 +198,7 @@ header {
 }
 
 /* Fade animation */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -307,21 +309,24 @@ footer {
   background: #f7f7f7;
 }
 
-/*.btn--primary {
+/* Primary button (renamed) */
+.btn-primary {
   background: var(--primary);
   border-color: var(--primary);
-  color: #ffffff;}
+  color: #ffffff;
+}
 
-.btn--primary:hover,
-.btn--primary:focus-visible {
+.btn-primary:hover,
+.btn-primary:focus-visible {
   filter: brightness(0.95);
 }
 
-.btn--link {
+/* Link button (renamed) */
+.btn-link {
   background: transparent;
   border: none;
   color: var(--primary);
-  padding-left: 0px;
+  padding-left: 0;
 }
 
 /* Cards */
